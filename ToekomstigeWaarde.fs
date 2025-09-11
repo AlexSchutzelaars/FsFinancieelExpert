@@ -9,30 +9,30 @@ type PXNumerando =
     | Vooraf = 1
 
 // Definieer de frequentie als een enum
-type Frequentie =
+type FinMutatieFrequentie =
     | Dagelijks = 1
     | Maandelijks = 2
     | Halfjaarlijks = 3
     | Jaarlijks = 4
 
-type FrequentieItem = {
+type FinMutatieFrequentieItem = {
     Naam: string
-    Waarde: Frequentie
+    Waarde: FinMutatieFrequentie
 }
 
-let frequentieItems = 
+let financieMutatieFrequentieItems = 
     [|
-        { Naam = "Dagelijks"; Waarde = Frequentie.Dagelijks }
-        { Naam = "Maandelijks"; Waarde = Frequentie.Maandelijks }
-        { Naam = "Halfjaarlijks"; Waarde = Frequentie.Halfjaarlijks }
-        { Naam = "Jaarlijks"; Waarde = Frequentie.Jaarlijks }
+        { Naam = "Dagelijks"; Waarde = FinMutatieFrequentie.Dagelijks }
+        { Naam = "Maandelijks"; Waarde = FinMutatieFrequentie.Maandelijks }
+        { Naam = "Halfjaarlijks"; Waarde = FinMutatieFrequentie.Halfjaarlijks }
+        { Naam = "Jaarlijks"; Waarde = FinMutatieFrequentie.Jaarlijks }
     |]
 
-let mapFrequentieNaarRenteFactor (freq: Frequentie) =
-     if freq =  Frequentie.Dagelijks then 365
-     elif freq =  Frequentie.Maandelijks then 12
-     elif freq =  Frequentie.Halfjaarlijks then 6
-     elif freq =  Frequentie.Jaarlijks then 1
+let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
+     if freq =  FinMutatieFrequentie.Dagelijks then 365
+     elif freq =  FinMutatieFrequentie.Maandelijks then 12
+     elif freq =  FinMutatieFrequentie.Halfjaarlijks then 6
+     elif freq =  FinMutatieFrequentie.Jaarlijks then 1
      else 1
 
     // Bereken de toekomstige waarde met periodieke betalingen.
@@ -92,15 +92,13 @@ let maakToekomstigeWaardeFormulier () =
 
     //    MessageBox.Show (string listBox.Items.[i]) |> ignore
 
-    let labelResultaat = new Label(Text = "Berekende waarde", Top = 220, Left = 30, Width = 200)
+    let labelResultaat = new Label(Text = "Berekende waarde (TW)", Top = 220, Left = 30, Width = 200)
     let textResult = new TextBox(Top = 240, Left = 30, Width = 200, ReadOnly = true)
 
     let btnBereken = new Button(Text = "Bereken", Top = 280, Left = 30, Width = 100)
-    let btnTerug = new Button(Text = "Terug naar hoofdscherm", Top = 280, Left = 270, Width = 200)
+    let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Top = 280, Left = 200, Width = 200)
 
-    btnTerug.Click.Add(fun _ -> form.Close())
-
-    // Event handler voor knopklik
+    // Event handler voor knop Berekenen (click)
     btnBereken.Click.Add(fun _ ->
         let successInitieel, inlegInitieel = Double.TryParse(inputInlegInitieel.Text)
         let successInlegPeriodiek, _ = Double.TryParse(inputInlegPeriodiek.Text)
@@ -108,7 +106,7 @@ let maakToekomstigeWaardeFormulier () =
         let selectedIndex = listBoxInlegfrequentie.SelectedIndex
 
         if (successInitieel || successInlegPeriodiek) && successRente && selectedIndex >= 0 then
-            let geselecteerd = listBoxInlegfrequentie.SelectedItem :?> FrequentieItem
+            let geselecteerd = listBoxInlegfrequentie.SelectedItem :?> FinMutatieFrequentieItem
             let frequentieFactor = geselecteerd.Waarde
 
             let aantaljaren = Convert.ToInt32(inputJaren.Text)
@@ -119,8 +117,8 @@ let maakToekomstigeWaardeFormulier () =
             // Postnumerando (0) of Prenumerando (1)
 
             let pXNumerando = if checkbox.Checked then PXNumerando.Achteraf else PXNumerando.Vooraf
-            let renteperunage = (rente / 100.0) / float (mapFrequentieNaarRenteFactor frequentieFactor)
-            let resultaat = TW (renteperunage) (aantaljaren * mapFrequentieNaarRenteFactor frequentieFactor) (-inlegPeriodiek) (-inlegInitieel) pXNumerando
+            let renteperunage = (rente / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
+            let resultaat = TW (renteperunage) (aantaljaren * mapFrequentieNaarGetal frequentieFactor) (-inlegPeriodiek) (-inlegInitieel) pXNumerando
             
         // Gebruik de huidige systeemcultuur
             let systeemCultuur = CultureInfo.CurrentCulture.Clone() :?> CultureInfo
@@ -133,6 +131,8 @@ let maakToekomstigeWaardeFormulier () =
         else
             MessageBox.Show("Voer geldige getallen in en kies de frequentie voor de rentering.") |> ignore
     )
+
+    btnTerug.Click.Add(fun _ -> form.Close())
 
     // Voeg alle elementen toe aan het formulier
     form.Controls.Add(labelInlegInitieel)
@@ -155,6 +155,6 @@ let maakToekomstigeWaardeFormulier () =
     form.Controls.Add(btnBereken)
     form.Controls.Add(btnTerug)
 
-    listBoxInlegfrequentie.DataSource <- frequentieItems
-    listBoxInlegfrequentie.SelectedIndex <- int(Frequentie.Jaarlijks) - 1
+    listBoxInlegfrequentie.DataSource <- financieMutatieFrequentieItems
+    listBoxInlegfrequentie.SelectedIndex <- int(FinMutatieFrequentie.Jaarlijks) - 1
     form
