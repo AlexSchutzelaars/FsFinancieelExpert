@@ -129,7 +129,7 @@ let maakToekomstigeWaardeFormulier () =
             let formattedResultaat = resultaat.ToString("C", systeemCultuur)
             textResult.Text <- formattedResultaat
         else
-            MessageBox.Show("Voer geldige getallen in en kies de frequentie voor de rentering.") |> ignore
+            MessageBox.Show("Voer geldige getallen in en kies de frequentie voor de rentebijschrijving.") |> ignore
     )
 
     btnTerug.Click.Add(fun _ -> form.Close())
