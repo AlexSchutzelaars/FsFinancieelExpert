@@ -1,0 +1,23 @@
+<provider>
+  <name>ASN Bank</name>
+  <funds>
+    <fund>
+      <Name>ASN Milieu- en Waterfonds</Name>
+      <Description>Focus op milieu en duurzaam watergebruik</Description>
+      <TimeSlice>
+        <Date>2021-04-13</Date>
+        <HowMany>10</HowMany>
+        <Price>48.7</Price>
+      </TimeSlice>
+    </fund>
+    <fund>
+      <Name>ASN AandelenFonds</Name>
+      <Description>Wereldwijd aandelenfonds</Description>
+      <TimeSlice>
+        <Date>2021-04-13</Date>
+        <HowMany>9.25</HowMany>
+        <Price>110.7</Price>
+      </TimeSlice>
+    </fund>
+  </funds>
+</provider>

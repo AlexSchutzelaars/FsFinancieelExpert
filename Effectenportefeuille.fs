@@ -64,7 +64,7 @@ let getDataForFundByName(providerInFileName: string, nameOfFund: string) =
    fundInfo
 
 let maakEffectenPortefeuilleFormulier () =
-    let frmEffectenportefeuille = new Form(Text = "Bekijk je effectenportefeuille", Width = 700, Height = 300)
+    let frmEffectenportefeuille = new Form(Text = "Bekijk je effectenportefeuille", Width = 700, Height = 400)
 
     let clientsize = new System.Drawing.Size(700, 430)
     let fundsForm = new Form(MaximizeBox = false, Text = "Fonds-info", ClientSize = clientsize, StartPosition = FormStartPosition.CenterScreen)
@@ -84,13 +84,15 @@ let maakEffectenPortefeuilleFormulier () =
     dateTimePicker.MinDate = new DateTime(2019, 1, 1) |> ignore
 
     let startY_LBoxFunds = startY_DateTime + 40
-    let startY_ValueFunds = startY_LBoxFunds + 80
     let lboxFunds = new ListBox(Left = 20, Top = startY_LBoxFunds, Height = 50, Width = 300)
-    let lblCalculatedForFund = new Label(Text = "Marktwaarde voor fonds", Left = 20, Top = startY_ValueFunds - 20, Height = 20, Width = 200)
-    let txtCalculatedForFund = new TextBox(Left = 20, Top = startY_ValueFunds, Height = 20, Width = 90, Visible = true)
-    let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Left = 350, Top = startY_ValueFunds,Width = 200)
+    let startY_LabelCalculatedValue = startY_LBoxFunds + lboxFunds.Height + 20
+    let startY_TextCalculatedValue = startY_LabelCalculatedValue + 20
+    let lblCalculatedForFund = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 250)
+    let txtCalculatedForFund = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true)
+    let txtPeildatumForFund = new TextBox(Left = 150, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true)
+    let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Left = 20, Top = startY_TextCalculatedValue + 40,Width = 200)
 
-        // Event handler voor de bestand-selectieknop
+    // Event handler voor de bestand-selectieknop
     btnXmlBestand.Click.Add(fun _ ->
         use dialog = new OpenFileDialog()
         dialog.Filter <- "XML bestanden (*.xml)|*.xml|Alle bestanden (*.*)|*.*"
@@ -126,8 +128,14 @@ let maakEffectenPortefeuilleFormulier () =
             let fundName = fundInfo.Name
             lboxFunds.Items.Add(fundName) |> ignore
 
-    let providerInFileName = "AsnBank"
+    let mutable providerInFileName = "AsnBankje"
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
+                                        providerInFileName <- txtXmlBestand.Text.Replace(".xml", "")
+                                        if providerInFileName.Length > 0 then
+                                            providerInFileName <- providerInFileName.Substring(providerInFileName.LastIndexOf('\\') + 1).Replace("FundInfo", "")
+                          
+                                        // MessageBox.Show(providerInFileName) |> ignore
+
                                         let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
                                         let nameOfFund = lboxFunds.SelectedItem.ToString()
                                         let fundInfo = getDataForFundByName(providerInFileName, nameOfFund)
@@ -145,10 +153,10 @@ let maakEffectenPortefeuilleFormulier () =
                                           let calculatedValue = (measurement.HowMany*measurement.Price)
                                           txtCalculatedForFund.Visible <- true
                                           txtCalculatedForFund.Text <- calculatedValue.ToString(".00")
-                                          let dialogHeader = $"Market value at {theDate}"
-                                          MessageBox.Show($"{fundInfo.Name} at {measurement.MeasurementDate}", dialogHeader) |> ignore)
-
-
+                                          txtPeildatumForFund.Visible <- true
+   
+                                          txtPeildatumForFund.Text <- measurement.MeasurementDate )
+                                          
     btnTerug.Click.Add(fun _ -> frmEffectenportefeuille.Close())
 
     fundsForm.Controls.Add dateTimePicker
@@ -163,5 +171,6 @@ let maakEffectenPortefeuilleFormulier () =
     frmEffectenportefeuille.Controls.Add lboxFunds
     frmEffectenportefeuille.Controls.Add lblCalculatedForFund
     frmEffectenportefeuille.Controls.Add txtCalculatedForFund
+    frmEffectenportefeuille.Controls.Add txtPeildatumForFund
     frmEffectenportefeuille.Controls.Add(btnTerug)
     frmEffectenportefeuille

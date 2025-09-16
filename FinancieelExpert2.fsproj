@@ -6,10 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="XmlBestanden\FundInfoAsnBank.xml" />
     <Compile Include="HuidigeWaarde.fs" />
     <Compile Include="ToekomstigeWaarde.fs" />
     <Compile Include="Effectenportefeuille.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 </Project>
 
