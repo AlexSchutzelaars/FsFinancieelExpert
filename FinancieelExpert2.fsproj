@@ -8,7 +8,7 @@
   <ItemGroup>
     <Compile Include="HuidigeWaarde.fs" />
     <Compile Include="ToekomstigeWaarde.fs" />
-    <Compile Include="NogTeBepalen.fs" />
+    <Compile Include="Effectenportefeuille.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
