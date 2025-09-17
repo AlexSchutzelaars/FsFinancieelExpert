@@ -6,13 +6,8 @@ open System.Linq
 open System.Xml.Linq
 open System
 
-
 type Measurement = {MeasurementDate: string; HowMany: double; Price: double}
 type FundInfo = {Provider: string; Name: string; Description: string; Measurements: List<Measurement>}
-
-let getXmlFileName(providerInFileName: string) =
-    let fileName = $"C:/Projecten/FSharpWfVoorbeeld/FundInfo{providerInFileName}.xml"
-    fileName
 
 let getProvider(doc: XmlDocument)  =
    let providerNodes = doc.SelectSingleNode("//provider/name") |> Seq.cast<XmlNode>
@@ -45,22 +40,22 @@ let getDataForFund(fundProviderInXml: string, fundNode: XmlNode) =
                             Measurements = measurements}
    fundInfo
 
-let getDataForFundByName(providerInFileName: string, nameOfFund: string) =
-   let fileName = getXmlFileName(providerInFileName)
+let getDataByFundName(fileName: string, nameOfFund: string) =
 
    (* https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmldocument?view=net-5.0 *)
 
    let doc = new XmlDocument()
    doc.Load fileName
-   let providerInXml = getProvider doc
+   let providerName = getProvider doc
    let funds = getFundNodes doc
-   let mutable fundInfo = {Provider = providerInXml; Name = "Dummy"; Description = "Dummy"; Measurements = []}
+   let mutable fundInfo = {Provider = providerName; Name = "Dummy"; Description = "Dummy"; Measurements = []}
    let mutable found = false
-   for index = 0 to funds.Count - 1 do
-     if not found then
-         fundInfo <- getDataForFund(providerInXml, funds.[index])
-     if fundInfo.Name = nameOfFund then
-       found <- true
+   let mutable index = 0
+   while not found do
+       fundInfo <- getDataForFund(providerName, funds.[index])
+       index <- index + 1
+       if fundInfo.Name = nameOfFund then
+            found <- true
    fundInfo
 
 let maakEffectenPortefeuilleFormulier () =
@@ -124,23 +119,17 @@ let maakEffectenPortefeuilleFormulier () =
         let provider = getProvider doc
         let funds = getFundNodes doc
         for index = 0 to funds.Count - 1 do
-            let fundInfo = getDataForFund(provider, funds.[index])
-            let fundName = fundInfo.Name
+            let fundData = getDataForFund(provider, funds.[index])
+            let fundName = fundData.Name
             lboxFunds.Items.Add(fundName) |> ignore
 
-    let mutable providerInFileName = "AsnBankje"
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
-                                        providerInFileName <- txtXmlBestand.Text.Replace(".xml", "")
-                                        if providerInFileName.Length > 0 then
-                                            providerInFileName <- providerInFileName.Substring(providerInFileName.LastIndexOf('\\') + 1).Replace("FundInfo", "")
-                          
-                                        // MessageBox.Show(providerInFileName) |> ignore
-
                                         let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
                                         let nameOfFund = lboxFunds.SelectedItem.ToString()
-                                        let fundInfo = getDataForFundByName(providerInFileName, nameOfFund)
+                                        let fundData = getDataByFundName(txtXmlBestand.Text, nameOfFund)
+                                        // let fundData2 = getDataForFund(provider, funds.[index])
 
-                                        let fondsinfoOpDatum = fundInfo.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
+                                        let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
                                         let mutable measurement = {MeasurementDate = "2019-01-01"; HowMany = 0.0; Price = 0.0}
                                         for m in fondsinfoOpDatum do
                                           if m.MeasurementDate <= theDate then
@@ -154,7 +143,6 @@ let maakEffectenPortefeuilleFormulier () =
                                           txtCalculatedForFund.Visible <- true
                                           txtCalculatedForFund.Text <- calculatedValue.ToString(".00")
                                           txtPeildatumForFund.Visible <- true
-   
                                           txtPeildatumForFund.Text <- measurement.MeasurementDate )
                                           
     btnTerug.Click.Add(fun _ -> frmEffectenportefeuille.Close())
