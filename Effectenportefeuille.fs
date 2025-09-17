@@ -9,11 +9,6 @@ open System
 type Measurement = {MeasurementDate: string; HowMany: double; Price: double}
 type FundInfo = {Provider: string; Name: string; Description: string; Measurements: List<Measurement>}
 
-let getProvider(doc: XmlDocument)  =
-   let providerNodes = doc.SelectSingleNode("//provider/name") |> Seq.cast<XmlNode>
-   let provider = providerNodes.ToList().[0].Value.ToString()
-   provider
-
 let getFundNodes(fileName: string)  =
    let doc = new XmlDocument()
    doc.Load fileName
@@ -42,30 +37,19 @@ let getDataForFund(fundProviderInXml: string, fundNode: XmlNode) =
                             Measurements = measurements}
    fundInfo
 
+// Bijvoorbeeld: "ASN Bank" is de naam van DE provider in het XML-bestand
+// NB: Een provider per XML-bestand!
+// In de toekomst meerdere providers per XML-bestand?
 let getProviderName(fileName: string) =
    let doc = new XmlDocument()
    doc.Load fileName
-   let providerName = getProvider doc
+   let providerNodes = doc.SelectSingleNode("//provider/name") |> Seq.cast<XmlNode>
+   let providerName = providerNodes.ToList().[0].Value.ToString()
    providerName
 
-let getDataByFundName(fileName: string, nameOfFund: string) =
-
-   (* https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmldocument?view=net-5.0 *)
-
-   let providerName = getProviderName(fileName)
-   let funds = getFundNodes(fileName)
-   let mutable fundInfo = {Provider = providerName; Name = "Dummy"; Description = "Dummy"; Measurements = []}
-   let mutable found = false
-   let mutable index = 0
-   while not found do
-       fundInfo <- getDataForFund(providerName, funds.[index])
-       index <- index + 1
-       if fundInfo.Name = nameOfFund then
-            found <- true
-   fundInfo
-
+// Maak het formulier voor de effectenportefeuille
 let maakEffectenPortefeuilleFormulier () =
-    let frmEffectenportefeuille = new Form(Text = "Bekijk je effectenportefeuille", Width = 700, Height = 400)
+    let frmEffectenportefeuille = new Form(Text = "Bekijk uw effectenportefeuille", Width = 700, Height = 400)
 
     let clientsize = new System.Drawing.Size(700, 430)
     let fundsForm = new Form(MaximizeBox = false, Text = "Fonds-info", ClientSize = clientsize, StartPosition = FormStartPosition.CenterScreen)
@@ -127,10 +111,11 @@ let maakEffectenPortefeuilleFormulier () =
 
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
                                         let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
-                                        let nameOfFund = lboxFunds.SelectedItem.ToString()
-                                        let fundData = getDataByFundName(txtXmlBestand.Text, nameOfFund)
-                                        // let fundData2 = getDataForFund(provider, funds.[index])
-
+                                        let xmlFileName = txtXmlBestand.Text
+                                        let provider = getProviderName(xmlFileName)
+                                        let funds = getFundNodes(xmlFileName)
+                                        let selectedFund = funds[lboxFunds.SelectedIndex]
+                                        let fundData = getDataForFund(provider, selectedFund)
                                         let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
                                         let mutable measurement = {MeasurementDate = "2019-01-01"; HowMany = 0.0; Price = 0.0}
                                         for m in fondsinfoOpDatum do
