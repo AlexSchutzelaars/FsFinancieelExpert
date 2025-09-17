@@ -14,7 +14,9 @@ let getProvider(doc: XmlDocument)  =
    let provider = providerNodes.ToList().[0].Value.ToString()
    provider
 
-let getFundNodes(doc: XmlDocument)  =
+let getFundNodes(fileName: string)  =
+   let doc = new XmlDocument()
+   doc.Load fileName
    let fundNodes1 = doc.SelectNodes("//provider/funds/fund") |> Seq.cast<XmlNode>
    let fundNodes2 = fundNodes1.ToList()
    fundNodes2
@@ -40,14 +42,18 @@ let getDataForFund(fundProviderInXml: string, fundNode: XmlNode) =
                             Measurements = measurements}
    fundInfo
 
+let getProviderName(fileName: string) =
+   let doc = new XmlDocument()
+   doc.Load fileName
+   let providerName = getProvider doc
+   providerName
+
 let getDataByFundName(fileName: string, nameOfFund: string) =
 
    (* https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmldocument?view=net-5.0 *)
 
-   let doc = new XmlDocument()
-   doc.Load fileName
-   let providerName = getProvider doc
-   let funds = getFundNodes doc
+   let providerName = getProviderName(fileName)
+   let funds = getFundNodes(fileName)
    let mutable fundInfo = {Provider = providerName; Name = "Dummy"; Description = "Dummy"; Measurements = []}
    let mutable found = false
    let mutable index = 0
@@ -101,23 +107,19 @@ let maakEffectenPortefeuilleFormulier () =
         txtCalculatedForFund.Visible <- false
         let xmlFileName = txtXmlBestand.Text
         if File.Exists xmlFileName then
-            let doc = new XmlDocument()
-            doc.Load xmlFileName
-            let provider = getProvider doc
-            let funds = getFundNodes doc
+            let provider = getProviderName(xmlFileName)
+            let funds = getFundNodes(xmlFileName)
             for index = 0 to funds.Count - 1 do
                 let fundInfo = getDataForFund(provider, funds.[index])
                 let fundName = fundInfo.Name
                 lboxFunds.Items.Add(fundName) |> ignore
-    )
+        )
 
     let xmlFileName = txtXmlBestand.Text
 
     if File.Exists xmlFileName then
-        let doc = new XmlDocument()
-        doc.Load xmlFileName
-        let provider = getProvider doc
-        let funds = getFundNodes doc
+        let provider = getProviderName(xmlFileName)
+        let funds = getFundNodes(xmlFileName)
         for index = 0 to funds.Count - 1 do
             let fundData = getDataForFund(provider, funds.[index])
             let fundName = fundData.Name
