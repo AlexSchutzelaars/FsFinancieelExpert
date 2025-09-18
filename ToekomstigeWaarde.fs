@@ -5,8 +5,8 @@ open System
 
 // Definieer het type voor resp. post- en prenumerando
 type PXNumerando =
-    | Achteraf = 0
-    | Vooraf = 1
+    | Post = 0
+    | Pre = 1
 
 // Definieer de frequentie als een enum
 type FinMutatieFrequentie =
@@ -45,7 +45,7 @@ let TW (rente: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumeran
         let twFactor = Math.Pow(1.0 + rente, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
         resultaat <- -hw * twFactor - bet * (twFactor - 1.0) / rente
-        if (pXNumerando = PXNumerando.Vooraf) then
+        if (pXNumerando = PXNumerando.Pre) then
             resultaat <- resultaat * (1.0 + rente)
     resultaat
 
@@ -71,12 +71,12 @@ let maakToekomstigeWaardeFormulier () =
     let inputJaren = new TextBox(Top = 80, Left = 30, Width = 100)
     inputJaren.Text <- "1"
 
-    let checkbox = new CheckBox()
-    checkbox.Text <- "Postnumerando"
-    checkbox.Top <- 60
-    checkbox.Left <- 150
-    checkbox.Width <- 200
-    checkbox.Checked <- true
+    let chkPostnumerando = new CheckBox()
+    chkPostnumerando.Text <- "Postnumerando"
+    chkPostnumerando.Top <- 60
+    chkPostnumerando.Left <- 150
+    chkPostnumerando.Width <- 200
+    chkPostnumerando.Checked <- true
 
     // Label en ListBox voor Frequentie
     let labelInlegFrequentie = new Label(Text = "Inleg-frequentie", Top = 110, Left = 30, Width = 200)
@@ -116,7 +116,7 @@ let maakToekomstigeWaardeFormulier () =
                 | _ -> 0.0
             // Postnumerando (0) of Prenumerando (1)
 
-            let pXNumerando = if checkbox.Checked then PXNumerando.Achteraf else PXNumerando.Vooraf
+            let pXNumerando = if chkPostnumerando.Checked then PXNumerando.Post else PXNumerando.Pre
             let renteperunage = (rente / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
             let resultaat = TW (renteperunage) (aantaljaren * mapFrequentieNaarGetal frequentieFactor) (-inlegPeriodiek) (-inlegInitieel) pXNumerando
             
@@ -149,7 +149,7 @@ let maakToekomstigeWaardeFormulier () =
 
     form.Controls.Add(labelInlegFrequentie)
     form.Controls.Add(listBoxInlegfrequentie)
-    form.Controls.Add(checkbox)
+    form.Controls.Add(chkPostnumerando)
     form.Controls.Add(labelResultaat)
     form.Controls.Add(textResult)
     form.Controls.Add(btnBereken)
