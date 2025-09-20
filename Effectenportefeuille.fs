@@ -12,12 +12,13 @@ type FundInfo = {Provider: string; Name: string; Description: string; Measuremen
 let getFundNodes(fileName: string)  =
    let doc = new XmlDocument()
    doc.Load fileName
-   let fundNodes1 = doc.SelectNodes("//provider/funds/fund") |> Seq.cast<XmlNode>
+   let fundNodes1 = doc.SelectNodes("//funds/fund") |> Seq.cast<XmlNode>
    let fundNodes2 = fundNodes1.ToList()
    fundNodes2
 
-let getDataForFund(fundProviderInXml: string, fundNode: XmlNode) =
+let getDataForFund(fundNode: XmlNode) =
    let results = XDocument.Parse(fundNode.OuterXml).Descendants().ToList()
+   let providerName = results.Where(fun n -> n.Name = XName.Get "Provider").ToList().[0].Value
    let fundName = results.Where(fun n -> n.Name = XName.Get "Name").ToList().[0].Value
    let description = results.Where(fun d -> d.Name = XName.Get "Description").ToList().[0].Value
 
@@ -33,19 +34,9 @@ let getDataForFund(fundProviderInXml: string, fundNode: XmlNode) =
       let measurement: Measurement = {MeasurementDate = measurementDate; HowMany = double(howMany); Price = double(price)}
       measurements <- measurement::measurements
    
-   let mutable fundInfo = {Provider = fundProviderInXml; Name = fundName; Description = description;
+   let mutable fundInfo = {Provider = providerName; Name = fundName; Description = description;
                             Measurements = measurements}
    fundInfo
-
-// Bijvoorbeeld: "ASN Bank" is de naam van DE provider in het XML-bestand
-// NB: Een provider per XML-bestand!
-// In de toekomst meerdere providers per XML-bestand?
-let getProviderName(fileName: string) =
-   let doc = new XmlDocument()
-   doc.Load fileName
-   let providerNodes = doc.SelectSingleNode("//provider/name") |> Seq.cast<XmlNode>
-   let providerName = providerNodes.ToList().[0].Value.ToString()
-   providerName
 
 // Maak het formulier voor de effectenportefeuille
 let maakEffectenPortefeuilleFormulier () =
@@ -91,31 +82,19 @@ let maakEffectenPortefeuilleFormulier () =
         txtCalculatedForFund.Visible <- false
         let xmlFileName = txtXmlBestand.Text
         if File.Exists xmlFileName then
-            let provider = getProviderName(xmlFileName)
             let funds = getFundNodes(xmlFileName)
             for index = 0 to funds.Count - 1 do
-                let fundInfo = getDataForFund(provider, funds.[index])
+                let fundInfo = getDataForFund(funds.[index])
                 let fundName = fundInfo.Name
                 lboxFunds.Items.Add(fundName) |> ignore
         )
 
-    let xmlFileName = txtXmlBestand.Text
-
-    if File.Exists xmlFileName then
-        let provider = getProviderName(xmlFileName)
-        let funds = getFundNodes(xmlFileName)
-        for index = 0 to funds.Count - 1 do
-            let fundData = getDataForFund(provider, funds.[index])
-            let fundName = fundData.Name
-            lboxFunds.Items.Add(fundName) |> ignore
-
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
                                         let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
                                         let xmlFileName = txtXmlBestand.Text
-                                        let provider = getProviderName(xmlFileName)
                                         let funds = getFundNodes(xmlFileName)
                                         let selectedFund = funds[lboxFunds.SelectedIndex]
-                                        let fundData = getDataForFund(provider, selectedFund)
+                                        let fundData = getDataForFund(selectedFund)
                                         let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
                                         let mutable measurement = {MeasurementDate = "2019-01-01"; HowMany = 0.0; Price = 0.0}
                                         for m in fondsinfoOpDatum do

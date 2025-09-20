@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="XmlBestanden\FundInfoAsnBank.xml" />
+    <Content Include="XmlBestanden\FundInfoAlleBanken.xml" />
     <Compile Include="HuidigeWaarde.fs" />
     <Compile Include="ToekomstigeWaarde.fs" />
     <Compile Include="Effectenportefeuille.fs" />
