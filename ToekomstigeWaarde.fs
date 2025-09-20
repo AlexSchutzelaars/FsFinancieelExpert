@@ -35,8 +35,11 @@ let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
      elif freq =  FinMutatieFrequentie.Jaarlijks then 1
      else 1
 
-    // Bereken de toekomstige waarde met periodieke betalingen.
-    // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumeranco = default)
+// Bereken de toekomstige waarde met periodieke betalingen.
+// Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
+// Voorbeeld TW(0.03;50;6000; 0; 0) = € € 676.781,20.
+// Voorbeeld TW(0.03;50;6000; 0; 1) = € 697.084,64.
+// Zie Basisboek wiskunde en financiële berekeningen, 2020, hoofdstuk 4.9, p.161
 let TW (rente: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
     let mutable resultaat: float = 0.0
     if rente = 0.0 then
@@ -44,13 +47,10 @@ let TW (rente: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumeran
     else
         let twFactor = Math.Pow(1.0 + rente, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
-        resultaat <- -hw * twFactor - bet * (twFactor - 1.0) / rente
+        resultaat <- -hw * twFactor - bet * ((twFactor - 1.0) / rente)
         if (pXNumerando = PXNumerando.Pre) then
             resultaat <- resultaat * (1.0 + rente)
     resultaat
-
-
-// let terugButton = new Button(Text = "Terug", Top = 280, Left = 150, Width = 100)
 
 let maakToekomstigeWaardeFormulier () =
     let form = new Form(Text = "Berekening van toekomstige waarde (TW)", Width = 640, Height = 360)
@@ -89,8 +89,6 @@ let maakToekomstigeWaardeFormulier () =
 
     listBoxInlegfrequentie.DisplayMember <- "Naam"
     listBoxInlegfrequentie.ValueMember <- "Waarde" // optioneel, maar handig
-
-    //    MessageBox.Show (string listBox.Items.[i]) |> ignore
 
     let labelResultaat = new Label(Text = "Berekende waarde (TW)", Top = 220, Left = 30, Width = 200)
     let textResult = new TextBox(Top = 240, Left = 30, Width = 200, ReadOnly = true)

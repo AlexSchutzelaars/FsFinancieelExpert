@@ -3,26 +3,41 @@ open System.Windows.Forms
 open System
 open System.Globalization
 
-// Definieer het type voor resp. post- en prenumerando
+// Definieer het type voor resp. post- en prenumerando (in Excel is 0 = Postnumerando, 1 = Prenumerando)
 
-type PXNumerando = Pre | Post
+type PXNumerando = Post | Pre
+
+// Bereken de huidige waarde met periodieke betalingen voor prenumerando.
+// TW is het te bereiken doelbedrag (nadat alle betalingen zijn gedaan).
+let HWPrenumerando (rente: float) (aantalTermijnen: int) (bet: float) (tw: float): float =
+    let mutable resultaat = 0.0
+    if rente = 0.0 then
+        resultaat <- tw + bet * (float aantalTermijnen)
+    else
+        let cwFactor = Math.Pow(1.0 + rente, -aantalTermijnen)
+        let hwDoelbedrag = tw*cwFactor
+        resultaat <- hwDoelbedrag + bet * (1.0 + rente) * ((1.0 - cwFactor) / rente)
+    resultaat
+
+let HWPostnumerando (rente: float) (aantalTermijnen: int) (bet: float) (tw: float): float =
+    let aantalTermijnen2 = aantalTermijnen - 1
+    let mutable resultaat = 0.0
+    if rente = 0.0 then
+        resultaat <- tw + bet * (float aantalTermijnen2)
+    else
+        let cwFactor = Math.Pow(1.0 + rente, -aantalTermijnen2)
+        let hwDoelbedrag = tw*cwFactor
+        resultaat <- hwDoelbedrag + bet + bet * ((1.0 - cwFactor) / rente)
+    resultaat
 
 // Bereken de huidige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
-// HW = -HW - Bet * ((1 - (1 + Rente)^-n) / Rente) * (1 + Rente * NumerandoFactor)
-//      - HW / (1 + Rente)^n
-// waarbij NumerandoFactor 1 is voor prenumerando en 0 voor postnumerando
-// Moet nog geverifieerd/getest/gerefactord worden (code is van CoPilot)
-let HW (rente: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
+let HW (rente: float) (aantalTermijnen: int) (bet: float) (tw: float) (pXNumerando: PXNumerando) : float =
     let mutable resultaat: float = 0.0
-    if rente = 0.0 then
-        resultaat <- hw + bet * (float aantalTermijnen)
+    if pXNumerando = PXNumerando.Pre then
+        resultaat <- HWPrenumerando rente aantalTermijnen bet tw
     else
-        let cwFactor = Math.Pow(1.0 + rente, -aantalTermijnen)
-        // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
-        resultaat <- hw * cwFactor - bet * (cwFactor - 1.0) / rente
-        if (pXNumerando = PXNumerando.Post) then
-            resultaat <- resultaat * (1.0 + rente)
+        resultaat <- HWPostnumerando rente aantalTermijnen bet tw
     resultaat
 
 let maakHwFormulier () =
@@ -30,7 +45,7 @@ let maakHwFormulier () =
 
     let lblToekomstigeWaarde = new Label(Text = "Toekomstige waarde", Top = 20, Left = 10, Width = 200)
     let txtBoxToekomstigeWaarde = new TextBox(Top = 40, Left = 10, Width = 200)
-    let lblInlegPerTermijn = new Label(Text = "Inleg (0 indien geen)", Top = 60, Left = 10, Width = 200)
+    let lblInlegPerTermijn = new Label(Text = "Inleg (positief getal!)", Top = 60, Left = 10, Width = 200)
     let txtBoxInlegPerTermijn = new TextBox(Top = 80, Left = 10, Width = 100)
     let lblRente = new Label(Text = "Rente (%)", Top = 100, Left = 10, Width = 100)
     let txtBoxRente = new TextBox(Top = 120, Left = 10, Width = 100)
@@ -46,6 +61,7 @@ let maakHwFormulier () =
     let txtBoxAantalTermijnen = new TextBox(Top = 160, Left = 10, Width = 100)
     let lblHuidigeWaarde = new Label(Text = "Huidige waarde", Top = 180, Left = 10, Width = 200)
     let txtBoxHuidigeWaarde = new TextBox(Top = 200, Left = 10, Width = 200)
+    txtBoxHuidigeWaarde.ReadOnly <- true 
     let berekenButton = new Button(Text = "Bereken", Top = 240, Left = 10)
     let terugButton = new Button(Text = "Terug naar hoofdscherm", Top = 240, Left = 120, Width = 200)
     
