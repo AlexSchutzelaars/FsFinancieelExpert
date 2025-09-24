@@ -2,6 +2,7 @@ module HuidigeWaarde
 open System.Windows.Forms
 open System
 open System.Globalization
+open System.Drawing
 
 // Definieer het type voor resp. post- en prenumerando (in Excel is 0 = Postnumerando, 1 = Prenumerando)
 
@@ -41,7 +42,7 @@ let HW (rente: float) (aantalTermijnen: int) (bet: float) (tw: float) (pXNumeran
     resultaat
 
 let maakHwFormulier () =
-    let form = new Form(Text = "Huidige waarde", Width = 350, Height = 400)
+    let form = new Form(Text = "Huidige waarde", Width = 600, Height = 400)
 
     let lblToekomstigeWaarde = new Label(Text = "Toekomstige waarde", Top = 20, Left = 10, Width = 200)
     let txtBoxToekomstigeWaarde = new TextBox(Top = 40, Left = 10, Width = 200)
@@ -64,6 +65,7 @@ let maakHwFormulier () =
     txtBoxHuidigeWaarde.ReadOnly <- true 
     let berekenButton = new Button(Text = "Bereken", Top = 240, Left = 10)
     let terugButton = new Button(Text = "Terug naar hoofdscherm", Top = 240, Left = 120, Width = 200)
+    let btnVoorbeeldHw = new Button(Text = "Voorbeeld-data", Top = 240, Left = 420, Width = 100, BackColor = Color.LightGreen )
     
     // Event handlers
 
@@ -94,6 +96,15 @@ let maakHwFormulier () =
     )
 
     terugButton.Click.Add(fun _ -> form.Close())
+    btnVoorbeeldHw.Click.Add(fun _ ->
+    // Vul voorbeelddata in, nl. TW = 10.000, inleg per termijn = 2.500, rente = 6%, aantal termijnen = 50
+    // Zie Leveringsverzekeringskunde en pensioencalculaties (Academic Service), 2013, hoofdstuk 1.8, p.18
+    // Verwachte HW is dan - agerond - 41.769 (Postnumerando en Prenumerando)
+        txtBoxToekomstigeWaarde.Text <- "10000"
+        txtBoxInlegPerTermijn.Text <- "2500"
+        txtBoxRente.Text <- "6"
+        txtBoxAantalTermijnen.Text <- "50"
+    )
 
     form.Controls.Add(lblToekomstigeWaarde)
     form.Controls.Add(txtBoxToekomstigeWaarde)
@@ -108,4 +119,5 @@ let maakHwFormulier () =
     form.Controls.Add(txtBoxHuidigeWaarde)      
     form.Controls.Add(berekenButton)
     form.Controls.Add(terugButton)
+    form.Controls.Add(btnVoorbeeldHw)
     form

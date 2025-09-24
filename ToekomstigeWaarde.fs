@@ -2,6 +2,7 @@ module ToekomstigeWaarde
 open System.Windows.Forms
 open System.Globalization
 open System
+open System.Drawing
 
 // Definieer het type voor resp. post- en prenumerando
 type PXNumerando =
@@ -37,9 +38,6 @@ let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
 
 // Bereken de toekomstige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
-// Voorbeeld TW(0.03;50;6000; 0; 0) = € € 676.781,20.
-// Voorbeeld TW(0.03;50;6000; 0; 1) = € 697.084,64.
-// Zie Basisboek wiskunde en financiële berekeningen, 2020, hoofdstuk 4.9, p.161
 let TW (rente: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
     let mutable resultaat: float = 0.0
     if rente = 0.0 then
@@ -95,6 +93,7 @@ let maakToekomstigeWaardeFormulier () =
 
     let btnBereken = new Button(Text = "Bereken", Top = 280, Left = 30, Width = 100)
     let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Top = 280, Left = 200, Width = 200)
+    let btnVoorbeeldTw = new Button(Text = "Voorbeeld-data", Top = 280, Left = 420, Width = 100, BackColor = Color.LightGreen )
 
     // Event handler voor knop Berekenen (click)
     btnBereken.Click.Add(fun _ ->
@@ -131,6 +130,17 @@ let maakToekomstigeWaardeFormulier () =
     )
 
     btnTerug.Click.Add(fun _ -> form.Close())
+    // Voorbeeld TW(0.03;50;6000; 0; 0) = € € 676.781,20. Postnumerando
+    // Voorbeeld TW(0.03;50;6000; 0; 1) = € 697.084,64. Prenumerando
+    // Zie Basisboek wiskunde en financiële berekeningen, 2020, hoofdstuk 4.9, p.161
+    btnVoorbeeldTw.Click.Add(fun _ ->
+        inputInlegInitieel.Text <- "0"
+        inputInlegPeriodiek.Text <- "6000"
+        inputRente.Text <- "3"
+        inputJaren.Text <- "50"
+        listBoxInlegfrequentie.SelectedIndex <- int(FinMutatieFrequentie.Jaarlijks) - 1
+        chkPostnumerando.Checked <- true
+    )
 
     // Voeg alle elementen toe aan het formulier
     form.Controls.Add(labelInlegInitieel)
@@ -152,6 +162,8 @@ let maakToekomstigeWaardeFormulier () =
     form.Controls.Add(textResult)
     form.Controls.Add(btnBereken)
     form.Controls.Add(btnTerug)
+    form.Controls.Add(btnVoorbeeldTw)
+
 
     listBoxInlegfrequentie.DataSource <- financieMutatieFrequentieItems
     listBoxInlegfrequentie.SelectedIndex <- int(FinMutatieFrequentie.Jaarlijks) - 1
