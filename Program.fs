@@ -15,17 +15,18 @@ do
     let toonHoofdscherm () =
         schermPanel.Controls.Clear()
 
-        let btnToekomstigeWaarde = new Button(Text = "Toekomstige waarde", Top = 10, Left = 10, Width = 200)
-        btnToekomstigeWaarde.Click.Add(fun _ -> (maakToekomstigeWaardeFormulier().ShowDialog() |> ignore))
-
-        let btnEffectenPortefeuille = new Button(Text = "Effectenportefeuille", Top = 50, Left = 10, Width = 200)
+        let btnEffectenPortefeuille = new Button(Text = "Effectenportefeuille", Top = 10, Left = 10, Width = 200)
         btnEffectenPortefeuille.Click.Add(fun _ -> (maakEffectenPortefeuilleFormulier().ShowDialog() |> ignore))
+
+        let btnToekomstigeWaarde = new Button(Text = "Toekomstige waarde", Top = 50, Left = 10, Width = 200)
+        btnToekomstigeWaarde.Click.Add(fun _ -> (maakToekomstigeWaardeFormulier().ShowDialog() |> ignore))
 
         let btnHuidigeWaarde = new Button(Text = "Huidige waarde (HW)", Top = 90, Left = 10, Width = 200)
         btnHuidigeWaarde.Click.Add(fun _ -> (maakHwFormulier().ShowDialog() |> ignore))
 
-        schermPanel.Controls.Add(btnToekomstigeWaarde)
         schermPanel.Controls.Add(btnEffectenPortefeuille)
+        schermPanel.Controls.Add(btnToekomstigeWaarde)
+
         schermPanel.Controls.Add(btnHuidigeWaarde)
 
     toonHoofdscherm()
