@@ -7,12 +7,15 @@
 
   <ItemGroup>
     <Content Include="XmlBestanden\FundInfoAlleBanken.xml" />
+    <Compile Include="ToonDocumentatie.fs" />
     <Compile Include="HuidigeWaarde.fs" />
     <Compile Include="ToekomstigeWaarde.fs" />
     <Compile Include="Effectenportefeuille.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.42.0" />
+  </ItemGroup>
 </Project>
 

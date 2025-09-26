@@ -1,15 +1,16 @@
 ﻿open System
 open System.Windows.Forms
-open HuidigeWaarde
+open Documentatie
 open ToekomstigeWaarde
 open EffectenPortefeuille
+open HuidigeWaarde
 
 [<STAThread>]
 [<EntryPoint>]
 do
     let form = new Form(Text = "FinancieelExpert v2", Width = 400, Height = 300)
 
-    let schermPanel = new Panel(Top = 80, Left = 10, Width = 360, Height = 150)
+    let schermPanel = new Panel(Top = 10, Left = 10, Width = 360, Height = 170)
     form.Controls.Add(schermPanel)
 
     let toonHoofdscherm () =
@@ -24,10 +25,14 @@ do
         let btnHuidigeWaarde = new Button(Text = "Huidige waarde (HW)", Top = 90, Left = 10, Width = 200)
         btnHuidigeWaarde.Click.Add(fun _ -> (maakHwFormulier().ShowDialog() |> ignore))
 
+        let btnDocumentatie = new Button(Text = "Documentatie", Top = 130, Left = 10, Width = 200)
+        btnDocumentatie.Click.Add(fun _ -> (maakDocumentatieFormulier().ShowDialog() |> ignore))
+
         schermPanel.Controls.Add(btnEffectenPortefeuille)
         schermPanel.Controls.Add(btnToekomstigeWaarde)
 
         schermPanel.Controls.Add(btnHuidigeWaarde)
+        schermPanel.Controls.Add(btnDocumentatie)
 
     toonHoofdscherm()
     Application.Run(form)
