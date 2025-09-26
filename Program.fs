@@ -8,7 +8,7 @@ open HuidigeWaarde
 [<STAThread>]
 [<EntryPoint>]
 do
-    let form = new Form(Text = "FinancieelExpert v2", Width = 400, Height = 300)
+    let form = new Form(Text = "FinancieelExpert 0.2", Width = 400, Height = 300)
 
     let schermPanel = new Panel(Top = 10, Left = 10, Width = 360, Height = 170)
     form.Controls.Add(schermPanel)

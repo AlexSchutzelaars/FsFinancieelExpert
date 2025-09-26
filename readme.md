@@ -1,4 +1,4 @@
-# FinancieelExpert2
+# FsFinancieelExpert
 
 Voorbeelden van financiële berekeningen in een F# Windows Forms applicatie. De naam van de applicatie zal in de toekomst aangepast worden. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Nu kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
 
@@ -27,7 +27,7 @@ Ove hoe je dat doet, zie: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
     of:
     #### dotnet publish -c Release -r win-x64 --self-contained true
 De tweede optie maakt een grotere map aan met een standalone executable. Voordeel: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
-- Zoek het uitvoerbare bestand: FinancieelExpert2.exe in de map. Bijvoorbeeld:  C:\Projecten\FinancieelExpert2\bin\Release\net9.0-windows\FinancieelExpert2.exe
+- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld:  C:\Projecten\FinancieelExpert2\bin\Release\net9.0-windows\FinancieelExpert2.exe
 - Optioneel: Maak een snelkoppeling naar het uitvoerbare bestand op je bureaublad.
 
 ### Uitvoeren van het programma
@@ -53,7 +53,7 @@ Bovendien kun je kiezen:
 ### of de rente jaarlijks, halfjaarlijks, per kwartaal, maandelijks of dagelijks wordt berekend.
 
 
-Contante waarde: voer de gegevens in (toekomstige waarde (= dolewaarde in de toekomst), rentepercentage, aantal jaren), en klik op "Bereken". De contante waarde wordt getoond. Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.  
+Contante waarde: voer de gegevens in (toekomstige waarde (= doelwaarde in de toekomst), rentepercentage, aantal jaren), en klik op "Bereken". De contante waarde wordt getoond. Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.  
 
 Tenslotte is er een Documentatie-knop die deze readme.md opent (en als *rich text* toont) in de standaard webbrowser.
 ## Auteurs
