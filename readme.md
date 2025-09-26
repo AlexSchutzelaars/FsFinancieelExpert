@@ -27,12 +27,12 @@ Ove hoe je dat doet, zie: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
     of:
     #### dotnet publish -c Release -r win-x64 --self-contained true
 De tweede optie maakt een grotere map aan met een standalone executable. Voordeel: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
-- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld:  C:\Projecten\FinancieelExpert2\bin\Release\net9.0-windows\FinancieelExpert2.exe
+- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld:  C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert2\.exe
 - Optioneel: Maak een snelkoppeling naar het uitvoerbare bestand op je bureaublad.
 
 ### Uitvoeren van het programma
 
-- Draai FinancieelExpert2.exe vanaf PowerShell of de CMD. Bijvoorbeeld in: C:\Projecten\FinancieelExpert2\bin\Debug\net9.0-windows\FinancieelExpert2.exe
+- Draai FsFinancieelExpert.exe vanaf PowerShell of de CMD. Bijvoorbeeld in: C:\Projecten\FsFinancieelExpert\bin\Debug\net9.0-windows\FsFinancieelExpert.exe
 
 
 ## Help
