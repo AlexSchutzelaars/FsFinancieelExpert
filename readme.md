@@ -1,18 +1,18 @@
 # FsFinancieelExpert
 
-Voorbeelden van financiële berekeningen in een F# Windows Forms applicatie. De naam van de applicatie zal in de toekomst aangepast worden. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Nu kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
+Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Nu kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
 
 ## Beschrijving
 
-Eenvoudige financiële berekeningen (bijvoorbeeld: spaarplannen) in een F# Windows Forms applicatie.
+Eenvoudige financiële berekeningen (bijvoorbeeld: spaarplannen) kunnen in een F# Windows Forms applicatie uitgevoerd worden.
 
 - Hoofdscherm, met koppelingen (via knoppen) naar:
 - Effectenportefeuille: berekening van de waarden van beleggingsfondsen (aandelen/obligaties). De data komen uit een XML-bestand.
 - Berekeningen van toekomstige waarde op basis van een startkapitaal (eventueel aangevuld met een periodieke inleg), rentepercentage en looptijd (aantal jaren).
 - Berekeningen van contante waarde op basis van een doelwaarde in de toekomst, rentepercentage en looptijd (aantal jaren)
 
-De rekenfuncties voor de laatste formules zijn respectievelijk gebaseerd (zelfde parameters, in dezelfde volgorde) op de Excel-functies TW en HW.
-Zij moeten dan ook dezelfde resultaten (afgezien van wat extra decimalen/afronding) opleveren als die functies in Excel, natuurlijk bij gelijke invoer.
+De rekenfuncties voor de laatste formules zijn respectievelijk gebaseerd op de Excel-functies TW en HW (de rekenmethoden hebben dezelfde parameters, in dezelfde volgorde, als hun Excel tegenhangers) .
+Zij moeten dan ook dezelfde resultaten (afgezien van wat extra decimalen/afronding) opleveren als de functies in Excel, natuurlijk bij gelijke invoer.
 
 ## Hoe te beginnen?
 
