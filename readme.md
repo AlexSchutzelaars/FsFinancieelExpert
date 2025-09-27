@@ -26,10 +26,9 @@ Ove hoe je dat doet, zie: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
     #### dotnet build --configuration Release
     of:
     #### dotnet publish -c Release -r win-x64 --self-contained true
-De tweede optie maakt een grotere map aan met een standalone executable. Voordeel: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
-- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld:  C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert2\.exe
+De tweede optie ("PUBLISH"), eveneens met een standalone executable, maakt een grotere map aan dan de eerste optie. Voordeel van deze optie: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
+- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld: C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert2\.exe
 - Optioneel: Maak een snelkoppeling naar het uitvoerbare bestand op je bureaublad.
-- Nog op te lossen: het programma kan het bestand README.md niet vinden (Documentatie-knop).
 
 ### Uitvoeren van het programma
 
@@ -62,7 +61,7 @@ Alex Schutzelaars (a.schutzelaars@outlook.com)
 
 ## Versiegeschiedenis
 * 0.3
-(Nog te ontwikkelen: in voorbereiding.)
+(Deze versie is nog te ontwikkelen: in voorbereiding.)
    * Verbetering layout van schermen (scherm voor contante waarde is onvolledig)
     Effectenportefeuille: berekenen van totalen, en rendement (1-jarig, 5-jarig)
    * refactoring
@@ -70,9 +69,11 @@ Alex Schutzelaars (a.schutzelaars@outlook.com)
    * voor contante waarde: het scherm uitbreiden
    * toevoegen van een unit test project (om de financiële berekeningen - in diverse scenario's -  te testen))
    * Wellicht omzetten in een XAML-applicatie, en/of een webversie.
+   * Nog op te lossen (alleen in de PUBLISH-versie van de release): het programma kan het bestand README.md niet vinden (Documentatie-knop).
 
 * 0.2
     * Diverse verbeteringen.
+    * Prototype toegevoegd van een Racket programmma voor eindewaarde-berekeningen.
     * Zie [commit change]() or See [release history]()
 * 0.1
     * Eerste versie
