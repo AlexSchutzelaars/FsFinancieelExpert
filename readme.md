@@ -21,7 +21,7 @@ Zij moeten dan ook dezelfde resultaten (afgezien van wat extra decimalen/afrondi
 Ove hoe je dat doet, zie: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 
 ### Installatie
-- Zet de code in een nieuwe map. (ZIP vanaf deze GitHub repository, en pak die map uit in bijvoorbeeld een map "C:/Projecten"s.)
+- Zet de code in een nieuwe map. (ZIP die map vanaf deze GitHub repository, en pak die uit in bijvoorbeeld een nieuwe map, bijvoorbeeld: "C:/Projecten"s.)
 - Build het programma in PowerShell (Windows-toets+R: type "powershell"), vanaf het hoogste niveau van de aangemaakte map). Dat doe je met:
     #### dotnet build --configuration Release
     of:
@@ -29,11 +29,11 @@ Ove hoe je dat doet, zie: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 De tweede optie maakt een grotere map aan met een standalone executable. Voordeel: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
 - Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld:  C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert2\.exe
 - Optioneel: Maak een snelkoppeling naar het uitvoerbare bestand op je bureaublad.
+- Nog op te lossen: het programma kan het bestand README.md niet vinden (Documentatie-knop).
 
 ### Uitvoeren van het programma
 
-- Draai FsFinancieelExpert.exe vanaf PowerShell of de CMD. Bijvoorbeeld in: C:\Projecten\FsFinancieelExpert\bin\Debug\net9.0-windows\FsFinancieelExpert.exe
-
+- Draai FsFinancieelExpert.exe vanaf PowerShell of de CMD. Bijvoorbeeld in: C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert.exe
 
 ## Help
 
