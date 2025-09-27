@@ -6,7 +6,7 @@ Voorbeelden van financiële berekeningen in een F# Windows Forms applicatie. De 
 
 Eenvoudige financiële berekeningen (bijvoorbeeld: spaarplannen) in een F# Windows Forms applicatie.
 
-- Hoofdscherm, met links (via knoppen) naar:
+- Hoofdscherm, met koppelingen (via knoppen) naar:
 - Effectenportefeuille: berekening van de waarden van beleggingsfondsen (aandelen/obligaties). De data komen uit een XML-bestand.
 - Berekeningen van toekomstige waarde op basis van een startkapitaal (eventueel aangevuld met een periodieke inleg), rentepercentage en looptijd (aantal jaren).
 - Berekeningen van contante waarde op basis van een doelwaarde in de toekomst, rentepercentage en looptijd (aantal jaren)
