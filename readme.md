@@ -1,18 +1,18 @@
 # FsFinancieelExpert
 
-Voorbeelden van financiële berekeningen in een F# Windows Forms applicatie. De naam van de applicatie zal in de toekomst aangepast worden. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Nu kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
+Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Nu kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
 
 ## Beschrijving
 
-Eenvoudige financiële berekeningen (bijvoorbeeld: spaarplannen) in een F# Windows Forms applicatie.
+Eenvoudige financiële berekeningen (bijvoorbeeld: spaarplannen) kunnen in een F# Windows Forms applicatie uitgevoerd worden.
 
-- Hoofdscherm, met links (via knoppen) naar:
+- Hoofdscherm, met koppelingen (via knoppen) naar:
 - Effectenportefeuille: berekening van de waarden van beleggingsfondsen (aandelen/obligaties). De data komen uit een XML-bestand.
 - Berekeningen van toekomstige waarde op basis van een startkapitaal (eventueel aangevuld met een periodieke inleg), rentepercentage en looptijd (aantal jaren).
 - Berekeningen van contante waarde op basis van een doelwaarde in de toekomst, rentepercentage en looptijd (aantal jaren)
 
-De rekenfuncties voor de laatste formules zijn respectievelijk gebaseerd (zelfde parameters, in dezelfde volgorde) op de Excel-functies TW en HW.
-Zij moeten dan ook dezelfde resultaten (afgezien van wat extra decimalen/afronding) opleveren als die functies in Excel, natuurlijk bij gelijke invoer.
+De rekenfuncties voor de laatste formules zijn respectievelijk gebaseerd op de Excel-functies TW en HW (de rekenmethoden hebben dezelfde parameters, in dezelfde volgorde, als hun Excel tegenhangers) .
+Zij moeten dan ook dezelfde resultaten (afgezien van wat extra decimalen/afronding) opleveren als de functies in Excel, natuurlijk bij gelijke invoer.
 
 ## Hoe te beginnen?
 
@@ -21,19 +21,18 @@ Zij moeten dan ook dezelfde resultaten (afgezien van wat extra decimalen/afrondi
 Ove hoe je dat doet, zie: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 
 ### Installatie
-- Zet de code in een nieuwe map. (ZIP vanaf deze GitHub repository, en pak die map uit in bijvoorbeeld een map "C:/Projecten"s.)
+- Zet de code in een nieuwe map. (ZIP die map vanaf deze GitHub repository, en pak die uit in bijvoorbeeld een nieuwe map, bijvoorbeeld: "C:/Projecten"s.)
 - Build het programma in PowerShell (Windows-toets+R: type "powershell"), vanaf het hoogste niveau van de aangemaakte map). Dat doe je met:
     #### dotnet build --configuration Release
     of:
     #### dotnet publish -c Release -r win-x64 --self-contained true
-De tweede optie maakt een grotere map aan met een standalone executable. Voordeel: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
-- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld:  C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert2\.exe
+De tweede optie ("PUBLISH"), eveneens met een standalone executable, maakt een grotere map aan dan de eerste optie. Voordeel van deze optie: je hebt geen .NET runtime meer nodig op de PC waarop je het programma wilt draaien.
+- Zoek het uitvoerbare bestand: FsFinancieelExpert.exe in de map. Bijvoorbeeld: C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert2\.exe
 - Optioneel: Maak een snelkoppeling naar het uitvoerbare bestand op je bureaublad.
 
 ### Uitvoeren van het programma
 
-- Draai FsFinancieelExpert.exe vanaf PowerShell of de CMD. Bijvoorbeeld in: C:\Projecten\FsFinancieelExpert\bin\Debug\net9.0-windows\FsFinancieelExpert.exe
-
+- Draai FsFinancieelExpert.exe vanaf PowerShell of de CMD. Bijvoorbeeld in: C:\Projecten\FsFinancieelExpert\bin\Release\net9.0-windows\FsFinancieelExpert.exe
 
 ## Help
 
@@ -62,7 +61,7 @@ Alex Schutzelaars (a.schutzelaars@outlook.com)
 
 ## Versiegeschiedenis
 * 0.3
-(Nog te ontwikkelen: in voorbereiding.)
+(Deze versie is nog te ontwikkelen: in voorbereiding.)
    * Verbetering layout van schermen (scherm voor contante waarde is onvolledig)
     Effectenportefeuille: berekenen van totalen, en rendement (1-jarig, 5-jarig)
    * refactoring
@@ -70,9 +69,11 @@ Alex Schutzelaars (a.schutzelaars@outlook.com)
    * voor contante waarde: het scherm uitbreiden
    * toevoegen van een unit test project (om de financiële berekeningen - in diverse scenario's -  te testen))
    * Wellicht omzetten in een XAML-applicatie, en/of een webversie.
+   * Nog op te lossen (alleen in de PUBLISH-versie van de release): het programma kan het bestand README.md niet vinden (Documentatie-knop).
 
 * 0.2
     * Diverse verbeteringen.
+    * Prototype toegevoegd van een Racket programmma voor eindewaarde-berekeningen.
     * Zie [commit change]() or See [release history]()
 * 0.1
     * Eerste versie
