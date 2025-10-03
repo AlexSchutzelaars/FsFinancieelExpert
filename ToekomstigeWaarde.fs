@@ -120,11 +120,22 @@ let maakToekomstigeWaardeFormulier () =
                 match Double.TryParse(inputInlegPeriodiek.Text) with
                 | (true, value) -> value
                 | _ -> 0.0
+
             // Postnumerando (0) of Prenumerando (1)
 
             let pXNumerando = if chkPostnumerando.Checked then PXNumerando.Post else PXNumerando.Pre
-            let renteperunage = (rente / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
-            let resultaat = TW (renteperunage) (aantaljaren * mapFrequentieNaarGetal frequentieFactor) (-inlegPeriodiek) (-inlegInitieel) pXNumerando
+            let mutable resultaat = 0.0
+            let mutable aantalTijdeenheden = 0
+            
+            let mutable rentePerunage = 0.0
+            if frequentieFactor = FinMutatieFrequentie.Continu then 
+                rentePerunage <- rente / 100.0
+                aantalTijdeenheden <- aantaljaren
+                resultaat <- berekenToekomstwaardeMetEulersGetal inlegInitieel rente aantalTijdeenheden
+             else
+                rentePerunage <- (rente / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
+                aantalTijdeenheden <- aantaljaren * mapFrequentieNaarGetal frequentieFactor
+                resultaat <- TW (rentePerunage) aantalTijdeenheden (-inlegPeriodiek) (-inlegInitieel) pXNumerando
             
         // Gebruik de huidige systeemcultuur
             let systeemCultuur = CultureInfo.CurrentCulture.Clone() :?> CultureInfo
