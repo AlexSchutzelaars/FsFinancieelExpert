@@ -15,6 +15,7 @@ type FinMutatieFrequentie =
     | Maandelijks = 2
     | Halfjaarlijks = 3
     | Jaarlijks = 4
+    | Continu = 5
 
 type FinMutatieFrequentieItem = {
     Naam: string
@@ -27,6 +28,7 @@ let financieMutatieFrequentieItems =
         { Naam = "Maandelijks"; Waarde = FinMutatieFrequentie.Maandelijks }
         { Naam = "Halfjaarlijks"; Waarde = FinMutatieFrequentie.Halfjaarlijks }
         { Naam = "Jaarlijks"; Waarde = FinMutatieFrequentie.Jaarlijks }
+        { Naam = "Continu (e^[r.t])"; Waarde = FinMutatieFrequentie.Continu }
     |]
 
 let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
@@ -34,7 +36,14 @@ let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
      elif freq =  FinMutatieFrequentie.Maandelijks then 12
      elif freq =  FinMutatieFrequentie.Halfjaarlijks then 6
      elif freq =  FinMutatieFrequentie.Jaarlijks then 1
+     elif freq =  FinMutatieFrequentie.Continu then 1
      else 1
+
+// Renteberekening met e^(r * t)
+// berekenToekomstwaarde 1000 5 3.0 ==> 1163.83
+let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rente: float) (tijd: float) : float =
+    let rentePerunage = float(rente/100.0)
+    hoofdsom * Math.Exp (rentePerunage * tijd)
 
 // Bereken de toekomstige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
