@@ -32,11 +32,15 @@ let financieMutatieFrequentieItems =
     |]
 
 let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
-     if freq =  FinMutatieFrequentie.Dagelijks then 365
+// Map de frequentie enum naar een deel- en vermenigvuldiginsfactor voor berekeningen
+// Continu is een speciale case, die apart wordt behandeld
+// De fuctie ervan is dat de rente gedeeld wordt door deze factor, en het aantal jaren
+// ermee vermenigvuldigd.
+     if freq =  FinMutatieFrequentie.Continu then 1
+     elif freq =  FinMutatieFrequentie.Dagelijks then 365
      elif freq =  FinMutatieFrequentie.Maandelijks then 12
      elif freq =  FinMutatieFrequentie.Halfjaarlijks then 6
      elif freq =  FinMutatieFrequentie.Jaarlijks then 1
-     elif freq =  FinMutatieFrequentie.Continu then 1
      else 1
 
 // Renteberekening met e^(r * t)
@@ -126,9 +130,11 @@ let maakToekomstigeWaardeFormulier () =
             let pXNumerando = if chkPostnumerando.Checked then PXNumerando.Post else PXNumerando.Pre
             let mutable resultaat = 0.0
             let mutable aantalTijdeenheden = 0
-            
             let mutable rentePerunage = 0.0
-            if frequentieFactor = FinMutatieFrequentie.Continu then 
+
+            if frequentieFactor = FinMutatieFrequentie.Continu then
+            // TODO: berekening van periodieke inleg toevoegen bij resultaat
+            // Voorlopig alleen initiële inleg bij continue rente
                 rentePerunage <- rente / 100.0
                 aantalTijdeenheden <- aantaljaren
                 resultaat <- berekenToekomstwaardeMetEulersGetal inlegInitieel rente aantalTijdeenheden
