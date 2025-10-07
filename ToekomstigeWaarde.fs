@@ -11,11 +11,12 @@ type PXNumerando =
 
 // Definieer de frequentie als een enum
 type FinMutatieFrequentie =
-    | Dagelijks = 1
-    | Maandelijks = 2
-    | Halfjaarlijks = 3
-    | Jaarlijks = 4
-    | Continu = 5
+    | Continu = 1
+    | Dagelijks = 2
+    | Maandelijks = 3
+    | Halfjaarlijks = 4
+    | Jaarlijks = 5
+
 
 type FinMutatieFrequentieItem = {
     Naam: string
@@ -24,11 +25,11 @@ type FinMutatieFrequentieItem = {
 
 let financieMutatieFrequentieItems = 
     [|
+        { Naam = "Continu (e^[r.t])"; Waarde = FinMutatieFrequentie.Continu }
         { Naam = "Dagelijks"; Waarde = FinMutatieFrequentie.Dagelijks }
         { Naam = "Maandelijks"; Waarde = FinMutatieFrequentie.Maandelijks }
         { Naam = "Halfjaarlijks"; Waarde = FinMutatieFrequentie.Halfjaarlijks }
         { Naam = "Jaarlijks"; Waarde = FinMutatieFrequentie.Jaarlijks }
-        { Naam = "Continu (e^[r.t])"; Waarde = FinMutatieFrequentie.Continu }
     |]
 
 let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
@@ -44,23 +45,23 @@ let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
      else 1
 
 // Renteberekening met e^(r * t)
-// berekenToekomstwaarde 1000 5 3.0 ==> 1163.83
-let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rente: float) (tijd: float) : float =
-    let rentePerunage = float(rente/100.0)
+// berekenToekomstwaarde 1000 0.05 3.0 ==> 1163.83
+let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float) (tijd: float) : float =
     hoofdsom * Math.Exp (rentePerunage * tijd)
 
 // Bereken de toekomstige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
-let TW (rente: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
+// Alleen voor discrete rentebijschrijvingen (dus niet continu = e-macht)
+let TW (rentePerunage: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
     let mutable resultaat: float = 0.0
-    if rente = 0.0 then
+    if rentePerunage = 0.0 then
         resultaat <- -hw - bet * float aantalTermijnen
     else
-        let twFactor = Math.Pow(1.0 + rente, aantalTermijnen)
+        let twFactor = Math.Pow(1.0 + rentePerunage, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
-        resultaat <- -hw * twFactor - bet * ((twFactor - 1.0) / rente)
+        resultaat <- -hw * twFactor - bet * ((twFactor - 1.0) / rentePerunage)
         if (pXNumerando = PXNumerando.Pre) then
-            resultaat <- resultaat * (1.0 + rente)
+            resultaat <- resultaat * (1.0 + rentePerunage)
     resultaat
 
 let maakToekomstigeWaardeFormulier () =
@@ -133,11 +134,22 @@ let maakToekomstigeWaardeFormulier () =
             let mutable rentePerunage = 0.0
 
             if frequentieFactor = FinMutatieFrequentie.Continu then
-            // TODO: berekening van periodieke inleg toevoegen bij resultaat
-            // Voorlopig alleen initiële inleg bij continue rente
+            // TODO: bij berekening van periodieke inleg rekening houden met pre- of postnumerando
                 rentePerunage <- rente / 100.0
                 aantalTijdeenheden <- aantaljaren
-                resultaat <- berekenToekomstwaardeMetEulersGetal inlegInitieel rente aantalTijdeenheden
+
+                let mutable inlegPeriodiekToekomstwaarde = 0.0
+                // formule voor de toekomstige waarde van periodieke inleg bij continue rente:
+
+                for tijdPunt in 1 .. aantaljaren do
+                    // Elke inlegPeriodiek wordt ingelegd op tijdstip 'tijdPunt', en groeit dan nog
+
+                    let waarde = berekenToekomstwaardeMetEulersGetal inlegPeriodiek rentePerunage (float(aantaljaren - tijdPunt))
+                    // let waarde = inlegPeriodiek * Math.Exp(rentePerunage * (float(aantaljaren - tijdPunt)))
+                    inlegPeriodiekToekomstwaarde <- inlegPeriodiekToekomstwaarde + waarde
+                    
+                let resultaatInlegInitieel = berekenToekomstwaardeMetEulersGetal inlegInitieel rentePerunage aantalTijdeenheden
+                resultaat <- resultaatInlegInitieel + inlegPeriodiekToekomstwaarde
              else
                 rentePerunage <- (rente / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
                 aantalTijdeenheden <- aantaljaren * mapFrequentieNaarGetal frequentieFactor

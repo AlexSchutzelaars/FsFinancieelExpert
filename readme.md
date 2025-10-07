@@ -65,15 +65,15 @@ Alex Schutzelaars (a.schutzelaars@outlook.com)
    * Verbetering layout van schermen (scherm voor contante waarde is onvolledig)
     Effectenportefeuille: berekenen van totalen, en rendement (1-jarig, 5-jarig)
    * refactoring
-   * verbeteren van de berekeningen (met uitbreiding voor continue rente-bijschrijving)
+   * verbeteren van de berekeningen, indien nodig (zie unit tests)
    * voor contante waarde: het scherm uitbreiden
    * toevoegen van een unit test project (om de financiële berekeningen - in diverse scenario's -  te testen))
    * Wellicht omzetten in een XAML-applicatie, en/of een webversie.
    * Nog op te lossen (alleen in de PUBLISH-versie van de release): het programma kan het bestand README.md niet vinden (Documentatie-knop).
 
 * 0.2
-    * Diverse verbeteringen.
-    * Prototype toegevoegd van een Racket programmma voor eindewaarde-berekeningen.
+    * 0.2.2: verbeteren van de berekeningen (met uitbreiding voor continue rente-bijschrijving)
+    * 0.2.2: Prototype toegevoegd van een Racket programmma voor eindewaarde-berekeningen.
     * Zie [commit change]() or See [release history]()
 * 0.1
     * Eerste versie

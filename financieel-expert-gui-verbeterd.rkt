@@ -1,8 +1,13 @@
 #lang racket/gui
 
-;;;; Eindewaarde-berekeningen (2 oktober 2025, 18:12)
-;;;; MEE BEZIG een GUI hieromheen bouwen. Verwerking van Periodieke inleg nog toe te implementeren.
+;;;; Eindewaarde-berekeningen (4 oktober 2025, 18:32)
+;;;  Versies:
+;;;  4 oktober 2025, 18:22: periodieke inleg toegevoegd aan berekening.
+;;;  6 oktober 2025 16:32: pre- en postnumerando checkbox toegevoegd aan GUI, plus bugfix.
 ;;;  Scherm is nog lelijk. Ook voor Contante-waarde-berekeningen, enz.
+
+(define (monetize getal)
+  (~r getal #:precision '(= 2)))
 
 (define RENTE-FREQUENTIE*
   (list
@@ -22,28 +27,63 @@
 
 ;;; Berekent eindwaarde van startkapitaal (SK) met gebruik van de e-macht
 
-(define (bereken-eindwaarde-SK-continu hoofdsom rente aantal-jaren)
-  (* hoofdsom (exp (* (exact->inexact (/ rente 100)) aantal-jaren))))
+(define (bereken-eindwaarde-SK-continu hoofdsom rente-perunage aantal-jaren)
+  (* hoofdsom (exp (* rente-perunage aantal-jaren))))
 
 ;;; Berekent eindwaarde van startkapitaal (SK) op de gangbare manier
-(define (bereken-eindwaarde-SK-discreet hoofdsom rente aantaljaren periode-naam)
-  (let* [(rente-factor (zoek-duur-rente-periode periode-naam ))
-         (rente-perunage (exact->inexact (/ rente 100)))]
-    (* hoofdsom (expt (exact->inexact (+ 1 (/ rente-perunage rente-factor))) (* aantaljaren rente-factor)))))
+;; rente-perunage: tussen 0 en 1.
+(define (bereken-eindwaarde-SK-discreet hoofdsom rente-perunage aantaljaren periode-naam)
+  (let* [(rente-factor (zoek-duur-rente-periode periode-naam ))]
+    (* hoofdsom (expt (+ 1 (/ rente-perunage rente-factor)) (* aantaljaren rente-factor)))))
 
 
-(define (bereken-eindwaarde-SK hoofdbedrag rente-perc aantal-perioden periode-naam)
+(define (bereken-eindwaarde-SK hoofdbedrag rente aantal-termijnen periode-naam)
+  ;; rente-perunage: tussen 0 en 1.
   ;;; Berekent eindwaarde van startkapitaal (SK). Bijvoorbeeld:
   ;;; (bereken-eindwaarde-SK 1000 5 2 'maand)
-  (cond ((eq? periode-naam 'continu) (bereken-eindwaarde-SK-continu hoofdbedrag rente-perc aantal-perioden))
-        (else (bereken-eindwaarde-SK-discreet hoofdbedrag rente-perc aantal-perioden periode-naam))))
+  (let ((rente-perunage  (exact->inexact (/ rente 100))))
+    (cond ((eq? periode-naam 'continu) (bereken-eindwaarde-SK-continu hoofdbedrag rente-perunage aantal-termijnen))
+          (else (bereken-eindwaarde-SK-discreet hoofdbedrag rente-perunage aantal-termijnen periode-naam)))))
 
+;;; Formule voor de som van een spaar-plan met betalingen (inleg) aan het begin van elke periode (pre-numerando).
+;;; Formule: S(1 + i)(1 - (1 + i)^n)/-i
+;;; Example 7.59
+;;; (spaarplan-prenum 750 4.5 10) ==> 9630.88 (Basic mathematics for economists, p. 254)
+(define (spaarplan-prenum inleg-per-periode rente aantal-termijnen)
+  (let* [(rente-perunage (exact->inexact (/ rente 100)))]
+    (* inleg-per-periode (/ (* (+ 1 rente-perunage) (- 1 (expt (+ 1 rente-perunage) aantal-termijnen))) (* -1 rente-perunage)))))
+
+;;; Formule voor de som van een spaar-plan met betalingen (inleg) aan het einde van elke periode (post-numerando)
+;;; (spaar-plan-prenum 750 4.5 10) ==> 9630.88 (Basic mathematics for economists, p. 258).
+;;; Formule: S(1 - (1 + i)^n)/-i
+;;; Example 7.64
+;;; (spaarplan-postnum 250 5 10) ==> 3144.47
+(define (spaarplan-postnum inleg-per-periode rente aantal-termijnen)
+  (let* [(rente-perunage (exact->inexact (/ rente 100)))]
+    (/ (* inleg-per-periode (- 1 (expt (+ 1 rente-perunage) aantal-termijnen))) (* -1 rente-perunage))))
+
+(define (spaarplan-tests-1)
+  (spaarplan-prenum 750 4.5 10)
+  (spaarplan-postnum 250 5 10) )
+
+;;; zelfde signatuur als TW in Excel, alleen laatste parameter toegevoegd
+;;; hw = hoofdsom; betaling = inleg per periode
+(define (tw rente aantal-termijnen betaling hw type periode-naam)
+  (let* [(eindwaarde-hw (bereken-eindwaarde-SK hw rente aantal-termijnen periode-naam))
+         (eindwaarde-spaarplan
+          (if (= type 0)
+              (spaarplan-postnum betaling rente aantal-termijnen)
+              (spaarplan-prenum betaling rente aantal-termijnen)))]
+    (+ eindwaarde-hw eindwaarde-spaarplan)))
+    
 ;;; ********************************************
 ;;; De GUI
 ;;; ********************************************
 
 (define (numerieke-waarde txtX)
-  (string->number (send txtX get-value)))
+  (let ((waarde (string->number (send txtX get-value))))
+    (if (not waarde) 0
+        waarde)))
 
 ;; Functie die het scherm opent voor de berekening van eindwaarde
 (define (open-eindewaarde-frame)
@@ -67,22 +107,37 @@
          [label "Kies een rente-interval  "]
          [choices (rente-frequentie-namen)]))
 
-  (define txtJaren (new text-field% [parent vpanel] [label "Aantal jaren"] [init-value "2"] [min-width 50]))
+  (define txtJaren (new text-field% [parent vpanel] [label "Aantal termijnen"] [init-value "2"] [min-width 50]))
 
-  (define (roepaan-bereken-eindwaarde) (let* [(waarde-hoofdsom (numerieke-waarde txtInleg))
-                                          (waarde-rente (numerieke-waarde txtRente))
-                                          (waarde-jaren (numerieke-waarde txtJaren))
-                                          (waarde-periode (string->symbol (send lbox-Periodenamen get-string-selection))) ]
-                                       
-                                     (number->string (bereken-eindwaarde-SK waarde-hoofdsom waarde-rente waarde-jaren waarde-periode))))
+
+  ;; Checkbox
+  (define chkPostnumerando? (new check-box%
+                              [parent vpanel]
+                              [value #t]
+                              [label "Postnumerando"]))
+
+
+  ;;; Nu alleen postumerando = 0!
+  (define (roepaan-bereken-eindwaarde) (let* [(w-hoofdsom (numerieke-waarde txtInleg))
+                                              (w-inleg-periodiek (numerieke-waarde txtInlegPeriodiek))
+                                              (w-rente (numerieke-waarde txtRente))
+                                              (w-aantal-termijnen (numerieke-waarde txtJaren))
+                                              (w-periode (string->symbol (send lbox-Periodenamen get-string-selection)))
+                                              (achteraf (send chkPostnumerando? get-value))
+                                              (w-prenum-postnum (if achteraf 0 1))]
+                                         (monetize (tw w-rente w-aantal-termijnen w-inleg-periodiek w-hoofdsom w-prenum-postnum w-periode))))
+  ;;; (monetize (bereken-eindwaarde-SK waarde-hoofdsom waarde-rente waarde-aantal-termijnen waarde-periode))))
+
+  ;; Horizontaal panel 2
+  (define hpanel2 (new horizontal-panel% [parent main-panel] [alignment '(left center)] [spacing 10]))
   
-  (define btnBereken (new button% [parent vpanel] [label "Bereken eindwaarde"]
-                          [callback (lambda (btn evt)
-                                                      
+  (define btnBereken (new button% [parent hpanel2] [label "Bereken eindwaarde"]
+                          [callback (lambda (btn evt)                                                   
                                       (send txtEindwaarde set-value (roepaan-bereken-eindwaarde))
                                       (displayln "Knop 'Bereken' werd ingedrukt!") )]))
+
   
-  (define txtEindwaarde (new text-field% [parent vpanel] [label "Eindwaarde"] [init-value ""] [min-width 50]))
+  (define txtEindwaarde (new text-field% [parent hpanel2] [label ""] [init-value ""] [min-width 50]))
 
   ;;; Jaar als default
   (send lbox-Periodenamen set-selection 6)
