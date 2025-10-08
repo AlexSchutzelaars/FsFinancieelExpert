@@ -70,10 +70,11 @@ Alex Schutzelaars (a.schutzelaars@outlook.com)
    * toevoegen van een unit test project (om de financiële berekeningen - in diverse scenario's -  te testen))
    * Wellicht omzetten in een XAML-applicatie, en/of een webversie.
    * Nog op te lossen (alleen in de PUBLISH-versie van de release): het programma kan het bestand README.md niet vinden (Documentatie-knop).
-
+   * Ontwikkeling eindwaarde weergeven in grafiek
 * 0.2
+    * 0.2.3: toevoegen van een C# Console project (om de financiële berekeningen - in diverse scenario's -  te testen))
     * 0.2.2: verbeteren van de berekeningen (met uitbreiding voor continue rente-bijschrijving)
-    * 0.2.2: Prototype toegevoegd van een Racket programmma voor eindewaarde-berekeningen.
+    * 0.2.1: Prototype toegevoegd van een Racket programmma voor eindewaarde-berekeningen.
     * Zie [commit change]() or See [release history]()
 * 0.1
     * Eerste versie
