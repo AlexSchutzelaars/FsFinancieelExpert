@@ -62,11 +62,11 @@ let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float)
 let TW (rentePerunage: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
     let mutable resultaat: float = 0.0
     if rentePerunage = 0.0 then
-        resultaat <- -hw - bet * float aantalTermijnen
+        resultaat <- -1.0*(hw + bet * float aantalTermijnen)
     else
         let twFactor = Math.Pow(1.0 + rentePerunage, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
-        resultaat <- -hw * twFactor - bet * ((twFactor - 1.0) / rentePerunage)
+        resultaat <- -1.0*(hw * twFactor + bet * ((twFactor - 1.0) / rentePerunage))
         if (pXNumerando = PXNumerando.Pre) then
             resultaat <- resultaat * (1.0 + rentePerunage)
     resultaat
