@@ -1,6 +1,6 @@
 # FsFinancieelExpert
 
-Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Nu kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
+Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Op dot moement (9 oktober 2025) kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
 
 ## Beschrijving
 
