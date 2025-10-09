@@ -14,9 +14,9 @@ type FinMutatieFrequentie =
     | Continu = 1
     | Dagelijks = 2
     | Maandelijks = 3
-    | Halfjaarlijks = 4
-    | Jaarlijks = 5
-
+    | PerKwartaal = 4
+    | Halfjaarlijks = 5
+    | Jaarlijks = 6
 
 type FinMutatieFrequentieItem = {
     Naam: string
@@ -28,6 +28,7 @@ let financieMutatieFrequentieItems =
         { Naam = "Continu (e^[r.t])"; Waarde = FinMutatieFrequentie.Continu }
         { Naam = "Dagelijks"; Waarde = FinMutatieFrequentie.Dagelijks }
         { Naam = "Maandelijks"; Waarde = FinMutatieFrequentie.Maandelijks }
+        { Naam = "Per kwartaal"; Waarde = FinMutatieFrequentie.PerKwartaal }
         { Naam = "Halfjaarlijks"; Waarde = FinMutatieFrequentie.Halfjaarlijks }
         { Naam = "Jaarlijks"; Waarde = FinMutatieFrequentie.Jaarlijks }
     |]
@@ -35,11 +36,12 @@ let financieMutatieFrequentieItems =
 let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
 // Map de frequentie enum naar een deel- en vermenigvuldiginsfactor voor berekeningen
 // Continu is een speciale case, die apart wordt behandeld
-// De fuctie ervan is dat de rente gedeeld wordt door deze factor, en het aantal jaren
+// De functie ervan is dat de rente gedeeld wordt door deze factor, en het aantal jaren
 // ermee vermenigvuldigd.
      if freq =  FinMutatieFrequentie.Continu then 1
      elif freq =  FinMutatieFrequentie.Dagelijks then 365
      elif freq =  FinMutatieFrequentie.Maandelijks then 12
+     elif freq =  FinMutatieFrequentie.PerKwartaal then 4
      elif freq =  FinMutatieFrequentie.Halfjaarlijks then 6
      elif freq =  FinMutatieFrequentie.Jaarlijks then 1
      else 1
@@ -52,6 +54,11 @@ let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float)
 // Bereken de toekomstige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
 // Alleen voor discrete rentebijschrijvingen (dus niet continu = e-macht)
+// groeifactor =  1 + rentePerunage
+// Voorbeelden:
+// TW(0.03;50;6000; 0; 0) = € 676.781,20. Postnumerando
+// TW(0.03;50;6000; 0; 1) = € 697.084,64. Prenumerando
+// TODO: rekenen met negatieve betalingen (inleg) en positieve (opnames)
 let TW (rentePerunage: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
     let mutable resultaat: float = 0.0
     if rentePerunage = 0.0 then
