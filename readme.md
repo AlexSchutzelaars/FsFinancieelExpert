@@ -1,6 +1,7 @@
 # FsFinancieelExpert
 
 Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Op dot moement (9 oktober 2025) kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
+Er is ook een klein C#-projectje met een voorbeeld berekening van de toekomsytige waarde van een hoofdsom en en periodike inleg. En er is een Racker module die de zelfde functionaliteit biedt (met GUI-schil) als het scherm voor de eindwaarde -berekening in het F#-project.
 
 ## Beschrijving
 
@@ -45,12 +46,10 @@ Een voorbeeldbestand is aanwezig in de map "VoorbeeldBestanden". De gegevens wor
 (Als je een ander XML-bestand wilt gebruiken, zorg er dan voor dat het dezelfde structuur heeft als het voorbeeldbestand. Je kunt het voorbeeldbestand aanpassen met je eigen gegevens, of een nieuw bestand maken met dezelfde structuur. Zet het wel in een andere map (is netter),
 
 Toekomstige waarde: voer de gegevens in (huidige waarde, rentepercentage, aantal jaren), en klik op "Bereken".
-De toekomstige waarde wordt getoond. (Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.) 
-### Je kunt kiezen of je periodiek wilt inleggen (en zo ja, hoeveel per periode).
-Bovendien kun je kiezen:
-### of de inleg aan het begin of aan het einde van de periode plaatsvindt (respectievelijk pre- en postnumerando).
-### of de rente jaarlijks, halfjaarlijks, per kwartaal, maandelijks of dagelijks wordt berekend.
-
+De toekomstige waarde wordt getoond. (Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.) Je kunt kiezen:
+- of je periodiek wilt inleggen (en zo ja, hoeveel per periode).
+- of de inleg aan het begin of aan het einde van de periode plaatsvindt (respectievelijk pre- en postnumerando).
+- of de rente jaarlijks, halfjaarlijks, per kwartaal, maandelijks of dagelijks wordt berekend.
 
 Contante waarde: voer de gegevens in (toekomstige waarde (= doelwaarde in de toekomst), rentepercentage, aantal jaren), en klik op "Bereken". De contante waarde wordt getoond. Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.  
 
