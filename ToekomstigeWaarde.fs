@@ -47,29 +47,32 @@ let mapFrequentieNaarGetal (freq: FinMutatieFrequentie) =
      else 1
 
 // Renteberekening met e^(r * t)
-// berekenToekomstwaarde 1000 0.05 3.0 ==> 1163.83
+// berekenToekomstwaardeMetEulersGetal 1000 0.05 3.0 ==> 1163.83
 let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float) (tijd: float) : float =
     hoofdsom * Math.Exp (rentePerunage * tijd)
 
 // Bereken de toekomstige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
-// Alleen voor discrete rentebijschrijvingen (dus niet continu = e-macht)
+// Alleen voor discrete rentebijschrijvingen (dus niet continu = e-macht).
+// rentePerunage = rente per tijdeenheid (bijv. per maand, kwartaal, jaar)
+// aantalTermijnen = totaal aantal tijdeenheden (bijv. maanden, kwartalen, jaren)
+// bet = periodieke betaling (negatief voor stortingen, positief voor opnamen)
 // groeifactor =  1 + rentePerunage
-// Voorbeelden:
-// TW(0.03;50;6000; 0; 0) = € 676.781,20. Postnumerando
-// TW(0.03;50;6000; 0; 1) = € 697.084,64. Prenumerando
-// TODO: rekenen met negatieve betalingen (inleg) en positieve (opnames)
+// Voorbeelden (spaarplan):
+// TW(0.03;-50;-6000; 0; 0) = € 676.781,20. Postnumerando
+// TW(0.03;-50;-6000; 0; 1) = € 697.084,64. Prenumerando
+// TODO: rekenen met positieve bedragen (geldopnamen)
 let TW (rentePerunage: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
-    let mutable resultaat: float = 0.0
     if rentePerunage = 0.0 then
-        resultaat <- -1.0*(hw + bet * float aantalTermijnen)
+        let resultaat = hw + bet * float aantalTermijnen
+        resultaat
     else
         let twFactor = Math.Pow(1.0 + rentePerunage, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
-        resultaat <- -1.0*(hw * twFactor + bet * ((twFactor - 1.0) / rentePerunage))
+        let mutable resultaat = hw * twFactor + bet * ((twFactor - 1.0) / rentePerunage)
         if (pXNumerando = PXNumerando.Pre) then
             resultaat <- resultaat * (1.0 + rentePerunage)
-    resultaat
+        resultaat
 
 let maakToekomstigeWaardeFormulier () =
     let form = new Form(Text = "Berekening van toekomstige waarde (TW)", Width = 640, Height = 360)
@@ -114,7 +117,7 @@ let maakToekomstigeWaardeFormulier () =
 
     let btnBereken = new Button(Text = "Bereken", Top = 280, Left = 30, Width = 100)
     let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Top = 280, Left = 200, Width = 200)
-    let btnVoorbeeldTw = new Button(Text = "Voorbeeld-data", Top = 280, Left = 420, Width = 100, BackColor = Color.LightGreen )
+    let btnVoorbeeldTw = new Button(Text = "Voorbeeld-data (Spaarplan)", Top = 280, Left = 420, Width = 200, BackColor = Color.LightGreen )
 
     // Event handler voor knop Berekenen (click)
     btnBereken.Click.Add(fun _ ->
@@ -180,7 +183,7 @@ let maakToekomstigeWaardeFormulier () =
     // Zie Basisboek wiskunde en financiële berekeningen, 2020, hoofdstuk 4.9, p.161
     btnVoorbeeldTw.Click.Add(fun _ ->
         inputInlegInitieel.Text <- "0"
-        inputInlegPeriodiek.Text <- "6000"
+        inputInlegPeriodiek.Text <- "-6000"
         inputRente.Text <- "3"
         inputJaren.Text <- "50"
         listBoxInlegfrequentie.SelectedIndex <- int(FinMutatieFrequentie.Jaarlijks) - 1
@@ -208,7 +211,6 @@ let maakToekomstigeWaardeFormulier () =
     form.Controls.Add(btnBereken)
     form.Controls.Add(btnTerug)
     form.Controls.Add(btnVoorbeeldTw)
-
 
     listBoxInlegfrequentie.DataSource <- financieMutatieFrequentieItems
     listBoxInlegfrequentie.SelectedIndex <- int(FinMutatieFrequentie.Jaarlijks) - 1
