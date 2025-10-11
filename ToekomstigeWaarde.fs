@@ -59,19 +59,19 @@ let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float)
 // bet = periodieke betaling (negatief voor stortingen, positief voor opnamen)
 // groeifactor =  1 + rentePerunage
 // Voorbeelden (spaarplan):
-// TW(0.03;-50;-6000; 0; 0) = € 676.781,20. Postnumerando
-// TW(0.03;-50;-6000; 0; 1) = € 697.084,64. Prenumerando
+// TW(0.03;50;-6000; 0; 0) = € 676.781,20. Postnumerando
+// TW(0.03;50;-6000; 0; 1) = € 697.084,64. Prenumerando
 // TODO: rekenen met positieve bedragen (geldopnamen)
-let TW (rentePerunage: float) (aantalTermijnen: int) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
-    if rentePerunage = 0.0 then
+let TW (interestPerunage: float) (aantalTermijnen: float) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
+    if interestPerunage = 0.0 then
         let resultaat = hw + bet * float aantalTermijnen
         resultaat
     else
-        let twFactor = Math.Pow(1.0 + rentePerunage, aantalTermijnen)
+        let twFactor = Math.Pow(1.0 + interestPerunage, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
-        let mutable resultaat = hw * twFactor + bet * ((twFactor - 1.0) / rentePerunage)
+        let mutable resultaat = hw * twFactor + bet * ((twFactor - 1.0) / interestPerunage)
         if (pXNumerando = PXNumerando.Pre) then
-            resultaat <- resultaat * (1.0 + rentePerunage)
+            resultaat <- resultaat * (1.0 + interestPerunage)
         resultaat
 
 let maakToekomstigeWaardeFormulier () =
@@ -123,7 +123,8 @@ let maakToekomstigeWaardeFormulier () =
     btnBereken.Click.Add(fun _ ->
         let successInitieel, inlegInitieel = Double.TryParse(inputInlegInitieel.Text)
         let successInlegPeriodiek, _ = Double.TryParse(inputInlegPeriodiek.Text)
-        let successRente, rente = Double.TryParse(inputRente.Text)
+        let interestConversie = inputRente.Text.Replace(".", ",")
+        let successRente, interest = Double.TryParse(interestConversie)
         let selectedIndex = listBoxInlegfrequentie.SelectedIndex
 
         if (successInitieel || successInlegPeriodiek) && successRente && selectedIndex >= 0 then
@@ -141,29 +142,30 @@ let maakToekomstigeWaardeFormulier () =
             let pXNumerando = if chkPostnumerando.Checked then PXNumerando.Post else PXNumerando.Pre
             let mutable resultaat = 0.0
             let mutable aantalTijdeenheden = 0
-            let mutable rentePerunage = 0.0
+            let mutable interestPerunage = 0.0
 
             if frequentieFactor = FinMutatieFrequentie.Continu then
             // TODO: bij berekening van periodieke inleg rekening houden met pre- of postnumerando
-                rentePerunage <- rente / 100.0
+                interestPerunage <- interest / 100.0
                 aantalTijdeenheden <- aantaljaren
 
                 let mutable inlegPeriodiekToekomstwaarde = 0.0
                 // formule voor de toekomstige waarde van periodieke inleg bij continue rente:
 
+                // TODO: aantaljaren mag een gebroken getal zijn (bijv. 10,5 jaar)
                 for tijdPunt in 1 .. aantaljaren do
                     // Elke inlegPeriodiek wordt ingelegd op tijdstip 'tijdPunt', en groeit dan nog
 
-                    let waarde = berekenToekomstwaardeMetEulersGetal inlegPeriodiek rentePerunage (float(aantaljaren - tijdPunt))
-                    // let waarde = inlegPeriodiek * Math.Exp(rentePerunage * (float(aantaljaren - tijdPunt)))
+                    let waarde = berekenToekomstwaardeMetEulersGetal inlegPeriodiek interestPerunage (float(aantaljaren - tijdPunt))
+
                     inlegPeriodiekToekomstwaarde <- inlegPeriodiekToekomstwaarde + waarde
                     
-                let resultaatInlegInitieel = berekenToekomstwaardeMetEulersGetal inlegInitieel rentePerunage aantalTijdeenheden
+                let resultaatInlegInitieel = berekenToekomstwaardeMetEulersGetal inlegInitieel interestPerunage aantalTijdeenheden
                 resultaat <- resultaatInlegInitieel + inlegPeriodiekToekomstwaarde
              else
-                rentePerunage <- (rente / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
+                interestPerunage <- (interest / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
                 aantalTijdeenheden <- aantaljaren * mapFrequentieNaarGetal frequentieFactor
-                resultaat <- TW (rentePerunage) aantalTijdeenheden (-inlegPeriodiek) (-inlegInitieel) pXNumerando
+                resultaat <- TW (interestPerunage) aantalTijdeenheden (-inlegPeriodiek) (-inlegInitieel) pXNumerando
             
         // Gebruik de huidige systeemcultuur
             let systeemCultuur = CultureInfo.CurrentCulture.Clone() :?> CultureInfo
