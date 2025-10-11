@@ -96,7 +96,7 @@ let maakToekomstigeWaardeFormulier () =
     let chkPostnumerando = new CheckBox()
     chkPostnumerando.Text <- "Postnumerando"
     chkPostnumerando.Top <- 60
-    chkPostnumerando.Left <- 150
+    chkPostnumerando.Left <- 270
     chkPostnumerando.Width <- 200
     chkPostnumerando.Checked <- true
 
@@ -141,7 +141,7 @@ let maakToekomstigeWaardeFormulier () =
 
             let pXNumerando = if chkPostnumerando.Checked then PXNumerando.Post else PXNumerando.Pre
             let mutable resultaat = 0.0
-            let mutable aantalTijdeenheden = 0
+            let mutable aantalTijdeenheden = 0.0
             let mutable interestPerunage = 0.0
 
             if frequentieFactor = FinMutatieFrequentie.Continu then
@@ -153,18 +153,24 @@ let maakToekomstigeWaardeFormulier () =
                 // formule voor de toekomstige waarde van periodieke inleg bij continue rente:
 
                 // TODO: aantaljaren mag een gebroken getal zijn (bijv. 10,5 jaar)
+                
+                let restantJaarFractie = float aantalTijdeenheden - float aantaljaren
                 for tijdPunt in 1 .. aantaljaren do
                     // Elke inlegPeriodiek wordt ingelegd op tijdstip 'tijdPunt', en groeit dan nog
 
                     let waarde = berekenToekomstwaardeMetEulersGetal inlegPeriodiek interestPerunage (float(aantaljaren - tijdPunt))
 
                     inlegPeriodiekToekomstwaarde <- inlegPeriodiekToekomstwaarde + waarde
-                    
+                
+                if restantJaarFractie > 0.0 then
+                    let waarde = berekenToekomstwaardeMetEulersGetal inlegPeriodiek interestPerunage (restantJaarFractie)
+                    inlegPeriodiekToekomstwaarde <- inlegPeriodiekToekomstwaarde + waarde
+                
                 let resultaatInlegInitieel = berekenToekomstwaardeMetEulersGetal inlegInitieel interestPerunage aantalTijdeenheden
                 resultaat <- resultaatInlegInitieel + inlegPeriodiekToekomstwaarde
              else
                 interestPerunage <- (interest / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
-                aantalTijdeenheden <- aantaljaren * mapFrequentieNaarGetal frequentieFactor
+                aantalTijdeenheden <- float(aantaljaren * mapFrequentieNaarGetal frequentieFactor)
                 resultaat <- TW (interestPerunage) aantalTijdeenheden (-inlegPeriodiek) (-inlegInitieel) pXNumerando
             
         // Gebruik de huidige systeemcultuur
