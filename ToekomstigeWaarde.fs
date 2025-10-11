@@ -3,11 +3,9 @@ open System.Windows.Forms
 open System.Globalization
 open System
 open System.Drawing
+open FsFinancieelRekenen
 
-// Definieer het type voor resp. post- en prenumerando
-type PXNumerando =
-    | Post = 0
-    | Pre = 1
+
 
 // Definieer de frequentie als een enum
 type FinMutatieFrequentie =
@@ -62,7 +60,7 @@ let berekenToekomstwaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float)
 // TW(0.03;50;-6000; 0; 0) = € 676.781,20. Postnumerando
 // TW(0.03;50;-6000; 0; 1) = € 697.084,64. Prenumerando
 // TODO: rekenen met positieve bedragen (geldopnamen)
-let TW (interestPerunage: float) (aantalTermijnen: float) (bet: float) (hw: float) (pXNumerando: PXNumerando) : float =
+let TW (interestPerunage: float) (aantalTermijnen: float) (bet: float) (hw: float) (pXNumerando: RekenUtils.PXNumerando) : float =
     if interestPerunage = 0.0 then
         let resultaat = hw + bet * float aantalTermijnen
         resultaat
@@ -70,7 +68,7 @@ let TW (interestPerunage: float) (aantalTermijnen: float) (bet: float) (hw: floa
         let twFactor = Math.Pow(1.0 + interestPerunage, aantalTermijnen)
         // Eenmalige investering (hw) wordt altijd aan het begin van de periode gedaan
         let mutable resultaat = hw * twFactor + bet * ((twFactor - 1.0) / interestPerunage)
-        if (pXNumerando = PXNumerando.Pre) then
+        if (pXNumerando = RekenUtils.PXNumerando.Pre) then
             resultaat <- resultaat * (1.0 + interestPerunage)
         resultaat
 
@@ -152,7 +150,7 @@ let maakToekomstigeWaardeFormulier () =
 
             // Postnumerando (0) of Prenumerando (1)
 
-            let pXNumerando = if chkPostnumerando.Checked then PXNumerando.Post else PXNumerando.Pre
+            let pXNumerando = if chkPostnumerando.Checked then RekenUtils.PXNumerando.Post else RekenUtils.PXNumerando.Pre
             let mutable resultaat = 0.0
             let mutable aantalTijdeenheden = 0.0
             let mutable interestPerunage = 0.0

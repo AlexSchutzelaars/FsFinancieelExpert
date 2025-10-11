@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsFinancieelExpert", "CsFin
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelExpert.Test", "FsFinancieelExpert.Test\FsFinancieelExpert.Test.fsproj", "{3A8FB99B-FE70-4331-8108-026185F400B1}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelRekenen", "FsFinancieelRekenen\FsFinancieelRekenen.fsproj", "{88B46C75-0985-405A-8846-2C7FBE11168C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{3A8FB99B-FE70-4331-8108-026185F400B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A8FB99B-FE70-4331-8108-026185F400B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A8FB99B-FE70-4331-8108-026185F400B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B46C75-0985-405A-8846-2C7FBE11168C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B46C75-0985-405A-8846-2C7FBE11168C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B46C75-0985-405A-8846-2C7FBE11168C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B46C75-0985-405A-8846-2C7FBE11168C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
