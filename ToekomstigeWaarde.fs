@@ -78,20 +78,24 @@ let maakToekomstigeWaardeFormulier () =
     let form = new Form(Text = "Berekening van toekomstige waarde (TW)", Width = 640, Height = 360)
 
     // Label en tekstveld voor Initiële - en periodieke Inleg en Rente
-    let labelInlegInitieel = new Label(Text = "Initiële inleg", Top = 10, Left = 30, Width = 100)
-    let inputInlegInitieel = new TextBox(Top = 30, Left = 30, Width = 100)
+    let lblInlegInitieel = new Label(Text = "Initiële inleg", Top = 10, Left = 30, Width = 100)
+    let txtInlegInitieel = new TextBox(Top = 30, Left = 30, Width = 100)
 
-    let labelInlegPeriodiek = new Label(Text = "Inleg (periodiek)", Top = 10, Left = 150, Width = 100)
-    let inputInlegPeriodiek = new TextBox(Top = 30, Left = 150, Width = 100)
+    let lblInlegPeriodiek = new Label(Text = "Inleg (periodiek)", Top = 10, Left = 150, Width = 100)
+    let txtInlegPeriodiek = new TextBox(Top = 30, Left = 150, Width = 100)
 
-    let labelRente = new Label(Text = "Rente", Top = 10, Left = 270, Width = 100)
-    let inputRente = new TextBox(Top = 30, Left = 270, Width = 100)
+    let lblInterest = new Label(Text = "Interest", Top = 10, Left = 270, Width = 100)
+    let txtInterest = new TextBox(Top = 30, Left = 270, Width = 100)
 
         // Label voor Jaren
 
-    let labelJaren = new Label(Text = "Jaren", Top = 60, Left = 30, Width = 100)
-    let inputJaren = new TextBox(Top = 80, Left = 30, Width = 100)
-    inputJaren.Text <- "1"
+    let lblJaren = new Label(Text = "Jaren", Top = 60, Left = 30, Width = 100)
+    let txtJaren = new TextBox(Top = 80, Left = 30, Width = 100)
+    txtJaren.Text <- "1"
+
+    let lblMaanden = new Label(Text = "Maanden", Top = 60, Left = 150, Width = 100)
+    let txtMaanden = new TextBox(Top = 80, Left = 150, Width = 100)
+    txtMaanden.Text <- ""
 
     let chkPostnumerando = new CheckBox()
     chkPostnumerando.Text <- "Postnumerando"
@@ -101,7 +105,7 @@ let maakToekomstigeWaardeFormulier () =
     chkPostnumerando.Checked <- true
 
     // Label en ListBox voor Frequentie
-    let labelInlegFrequentie = new Label(Text = "Inleg-frequentie", Top = 110, Left = 30, Width = 200)
+    let lblInlegFrequentie = new Label(Text = "Inleg-frequentie", Top = 110, Left = 30, Width = 200)
 
     let listBoxInlegfrequentie = new ListBox()
     listBoxInlegfrequentie.Top <- 130
@@ -112,8 +116,8 @@ let maakToekomstigeWaardeFormulier () =
     listBoxInlegfrequentie.DisplayMember <- "Naam"
     listBoxInlegfrequentie.ValueMember <- "Waarde" // optioneel, maar handig
 
-    let labelResultaat = new Label(Text = "Berekende waarde (TW)", Top = 220, Left = 30, Width = 200)
-    let textResult = new TextBox(Top = 240, Left = 30, Width = 200, ReadOnly = true)
+    let lblResultaat = new Label(Text = "Berekende waarde (TW)", Top = 220, Left = 30, Width = 200)
+    let txtResult = new TextBox(Top = 240, Left = 30, Width = 200, ReadOnly = true)
 
     let btnBereken = new Button(Text = "Bereken", Top = 280, Left = 30, Width = 100)
     let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Top = 280, Left = 200, Width = 200)
@@ -121,9 +125,9 @@ let maakToekomstigeWaardeFormulier () =
 
     // Event handler voor knop Berekenen (click)
     btnBereken.Click.Add(fun _ ->
-        let successInitieel, inlegInitieel = Double.TryParse(inputInlegInitieel.Text)
-        let successInlegPeriodiek, _ = Double.TryParse(inputInlegPeriodiek.Text)
-        let interestConversie = inputRente.Text.Replace(".", ",")
+        let successInitieel, inlegInitieel = Double.TryParse(txtInlegInitieel.Text)
+        let successInlegPeriodiek, _ = Double.TryParse(txtInlegPeriodiek.Text)
+        let interestConversie = txtInterest.Text.Replace(".", ",")
         let successRente, interest = Double.TryParse(interestConversie)
         let selectedIndex = listBoxInlegfrequentie.SelectedIndex
 
@@ -131,9 +135,18 @@ let maakToekomstigeWaardeFormulier () =
             let geselecteerd = listBoxInlegfrequentie.SelectedItem :?> FinMutatieFrequentieItem
             let frequentieFactor = geselecteerd.Waarde
 
-            let aantaljaren = Convert.ToInt32(inputJaren.Text)
+            let aantaljaren = 
+                match Int32.TryParse(txtJaren.Text) with
+                | (true, value) -> value
+                | _ -> 0
+
+            let aantalmaanden = 
+                match Int32.TryParse(txtMaanden.Text) with
+                | (true, value) -> value
+                | _ -> 0
+
             let inlegPeriodiek = 
-                match Double.TryParse(inputInlegPeriodiek.Text) with
+                match Double.TryParse(txtInlegPeriodiek.Text) with
                 | (true, value) -> value
                 | _ -> 0.0
 
@@ -145,14 +158,10 @@ let maakToekomstigeWaardeFormulier () =
             let mutable interestPerunage = 0.0
 
             if frequentieFactor = FinMutatieFrequentie.Continu then
-            // TODO: bij berekening van periodieke inleg rekening houden met pre- of postnumerando
                 interestPerunage <- interest / 100.0
-                aantalTijdeenheden <- aantaljaren
-
+                aantalTijdeenheden <- float(aantaljaren) + float (aantalmaanden) / 12.0
                 let mutable inlegPeriodiekToekomstwaarde = 0.0
                 // formule voor de toekomstige waarde van periodieke inleg bij continue rente:
-
-                // TODO: aantaljaren mag een gebroken getal zijn (bijv. 10,5 jaar)
                 
                 let restantJaarFractie = float aantalTijdeenheden - float aantaljaren
                 for tijdPunt in 1 .. aantaljaren do
@@ -171,6 +180,9 @@ let maakToekomstigeWaardeFormulier () =
              else
                 interestPerunage <- (interest / 100.0) / float (mapFrequentieNaarGetal frequentieFactor)
                 aantalTijdeenheden <- float(aantaljaren * mapFrequentieNaarGetal frequentieFactor)
+                if aantalmaanden > 0 then
+                    let extraTijdeenheden = (float aantalmaanden / 12.0)
+                    aantalTijdeenheden <- aantalTijdeenheden + float extraTijdeenheden
                 resultaat <- TW (interestPerunage) aantalTijdeenheden (-inlegPeriodiek) (-inlegInitieel) pXNumerando
             
         // Gebruik de huidige systeemcultuur
@@ -180,7 +192,7 @@ let maakToekomstigeWaardeFormulier () =
             systeemCultuur.NumberFormat.CurrencyDecimalSeparator <- ","
             systeemCultuur.NumberFormat.CurrencySymbol <- "€"
             let formattedResultaat = resultaat.ToString("C", systeemCultuur)
-            textResult.Text <- formattedResultaat
+            txtResult.Text <- formattedResultaat
         else
             MessageBox.Show("Voer geldige getallen in en kies de frequentie voor de rentebijschrijving.") |> ignore
     )
@@ -190,32 +202,36 @@ let maakToekomstigeWaardeFormulier () =
     // Voorbeeld TW(0.03;50;6000; 0; 1) = € 697.084,64. Prenumerando
     // Zie Basisboek wiskunde en financiële berekeningen, 2020, hoofdstuk 4.9, p.161
     btnVoorbeeldTw.Click.Add(fun _ ->
-        inputInlegInitieel.Text <- "0"
-        inputInlegPeriodiek.Text <- "-6000"
-        inputRente.Text <- "3"
-        inputJaren.Text <- "50"
+        txtInlegInitieel.Text <- "0"
+        txtInlegPeriodiek.Text <- "-6000"
+        txtInterest.Text <- "3"
+        txtJaren.Text <- "50"
+        txtMaanden.Text <- "0"
         listBoxInlegfrequentie.SelectedIndex <- int(FinMutatieFrequentie.Jaarlijks) - 1
         chkPostnumerando.Checked <- true
     )
 
     // Voeg alle elementen toe aan het formulier
-    form.Controls.Add(labelInlegInitieel)
-    form.Controls.Add(inputInlegInitieel)
+    form.Controls.Add(lblInlegInitieel)
+    form.Controls.Add(txtInlegInitieel)
 
-    form.Controls.Add(labelInlegPeriodiek)
-    form.Controls.Add(inputInlegPeriodiek)
+    form.Controls.Add(lblInlegPeriodiek)
+    form.Controls.Add(txtInlegPeriodiek)
 
-    form.Controls.Add(labelRente)
-    form.Controls.Add(inputRente)
+    form.Controls.Add(lblInterest)
+    form.Controls.Add(txtInterest)
 
-    form.Controls.Add(labelJaren)
-    form.Controls.Add(inputJaren)
+    form.Controls.Add(lblJaren)
+    form.Controls.Add(txtJaren)
 
-    form.Controls.Add(labelInlegFrequentie)
+    form.Controls.Add(lblMaanden)
+    form.Controls.Add(txtMaanden)
+
+    form.Controls.Add(lblInlegFrequentie)
     form.Controls.Add(listBoxInlegfrequentie)
     form.Controls.Add(chkPostnumerando)
-    form.Controls.Add(labelResultaat)
-    form.Controls.Add(textResult)
+    form.Controls.Add(lblResultaat)
+    form.Controls.Add(txtResult)
     form.Controls.Add(btnBereken)
     form.Controls.Add(btnTerug)
     form.Controls.Add(btnVoorbeeldTw)
