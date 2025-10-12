@@ -9,7 +9,7 @@
     <Content Include="XmlBestanden\FundInfoAlleBanken.xml" />
     <Compile Include="ToonDocumentatie.fs" />
     <Compile Include="HuidigeWaarde.fs" />
-    <Compile Include="ToekomstigeWaarde.fs" />
+    <Compile Include="ToekomstigeWaardeScherm.fs" />
     <Compile Include="Effectenportefeuille.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿open System
 open System.Windows.Forms
 open Documentatie
-open ToekomstigeWaarde
+open ToekomstigeWaardeScherm
 open EffectenPortefeuille
 open HuidigeWaarde
 

@@ -41,8 +41,8 @@ let HWPostnumerando (rente: float) (aantalTermijnen: int) (bet: float) (tw: floa
 
 // Bereken de huidige waarde met periodieke betalingen.
 // Zelfde signatuur als de gelijknamige Excel functie (0 = Postnumerando = default)
-let HW (rente: float) (aantalTermijnen: int) (bet: float) (tw: float) (pXNumerando: RekenUtils.PXNumerando) : float =
-    if pXNumerando = RekenUtils.PXNumerando.Pre then
+let HW (rente: float) (aantalTermijnen: int) (bet: float) (tw: float) (pXNumerando: Common.PXNumerando) : float =
+    if pXNumerando = Common.PXNumerando.Pre then
         let resultaat = HWPrenumerando rente aantalTermijnen bet tw
         resultaat
     else
@@ -72,7 +72,7 @@ let maakHwFormulier () =
     let txtHuidigeWaarde = new TextBox(Top = 200, Left = 10, Width = 200)
     txtHuidigeWaarde.ReadOnly <- true 
     let btnBereken = new Button(Text = "Bereken", Top = 240, Left = 10)
-    let btnTerug = new Button(Text = "Terug naar hoofdscherm", Top = 240, Left = 120, Width = 200)
+    let btnTerug = new Button(Text = "Naar hoofdscherm", Top = 240, Left = 120, Width = 200)
     let btnVoorbeeldHw = new Button(Text = "Voorbeeld-data", Top = 240, Left = 420, Width = 100, BackColor = Color.LightGreen )
     
     // Event handlers
@@ -84,8 +84,8 @@ let maakHwFormulier () =
             | _ -> 0.0
 
         let pxNumerando =
-            if chkPostnumerando.Checked then RekenUtils.PXNumerando.Post
-            else RekenUtils.PXNumerando.Pre
+            if chkPostnumerando.Checked then Common.PXNumerando.Post
+            else Common.PXNumerando.Pre
 
         let aantalTermijnen = 
             match Int32.TryParse(txtAantalTermijnen.Text) with
