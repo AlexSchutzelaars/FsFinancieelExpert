@@ -91,15 +91,15 @@ let maakToekomstigeWaardeFormulier () =
                 for tijdPunt in 1 .. aantaljaren do
                     // Elke inlegPeriodiek wordt ingelegd op tijdstip 'tijdPunt', en groeit dan nog
 
-                    let waarde = TwRekenUtils.berekenToekomstigewaardeMetEulersGetal inlegPeriodiek interestPerunage (float(aantaljaren - tijdPunt))
+                    let waarde = TwRekenUtils.BerekenToekomstigewaardeMetEulersGetal inlegPeriodiek interestPerunage (float(aantaljaren - tijdPunt))
 
                     inlegPeriodiekToekomstwaarde <- inlegPeriodiekToekomstwaarde + waarde
                 
                 if restantJaarFractie > 0.0 then
-                    let waarde = TwRekenUtils.berekenToekomstigewaardeMetEulersGetal inlegPeriodiek interestPerunage (restantJaarFractie)
+                    let waarde = TwRekenUtils.BerekenToekomstigewaardeMetEulersGetal inlegPeriodiek interestPerunage (restantJaarFractie)
                     inlegPeriodiekToekomstwaarde <- inlegPeriodiekToekomstwaarde + waarde
                 
-                let resultaatInlegInitieel = TwRekenUtils.berekenToekomstigewaardeMetEulersGetal inlegInitieel interestPerunage aantalTijdeenheden
+                let resultaatInlegInitieel = TwRekenUtils.BerekenToekomstigewaardeMetEulersGetal inlegInitieel interestPerunage aantalTijdeenheden
                 resultaat <- resultaatInlegInitieel + inlegPeriodiekToekomstwaarde
              else
                 interestPerunage <- (interest / 100.0) / float (Common.mapFrequentieNaarGetal frequentieFactor)
@@ -122,7 +122,7 @@ let maakToekomstigeWaardeFormulier () =
     )
 
     btnTerug.Click.Add(fun _ -> form.Close())
-    // Voorbeeld TW(0.03;50;6000; 0; 0) = € € 676.781,20. Postnumerando
+    // Voorbeeld TW(0.03;50;6000; 0; 0) = € 676.781,20. Postnumerando
     // Voorbeeld TW(0.03;50;6000; 0; 1) = € 697.084,64. Prenumerando
     // Zie Basisboek wiskunde en financiële berekeningen, 2020, hoofdstuk 4.9, p.161
     btnVoorbeeldTw.Click.Add(fun _ ->

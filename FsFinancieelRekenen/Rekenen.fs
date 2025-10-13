@@ -53,8 +53,8 @@ module Common =
 module TwRekenUtils =
 
          // Renteberekening met e^(r * t)
-// berekenToekomstwaardeMetEulersGetal 1000 0.05 3.0 ==> 1163.83
-    let berekenToekomstigewaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float) (tijd: float) : float =
+// erekenToekomstwaardeMetEulersGetal 1000 0.05 3.0 ==> 1163.83
+    let BerekenToekomstigewaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float) (tijd: float) : float =
         hoofdsom * Math.Exp (rentePerunage * tijd)
 
     // Bereken de toekomstige waarde met periodieke betalingen.
@@ -64,7 +64,7 @@ module TwRekenUtils =
     // aantalTermijnen = totaal aantal tijdeenheden (bijv. maanden, kwartalen, jaren)
     // bet = periodieke betaling (negatief voor stortingen, positief voor opnamen)
     // groeifactor =  1 + rentePerunage
-    // Voorbeelden (spaarplan):
+    // Voorbeelden (spaarplan) in Excel:
     // TW(0.03;50;-6000; 0; 0) = € 676.781,20. Postnumerando
     // TW(0.03;50;-6000; 0; 1) = € 697.084,64. Prenumerando
     // TODO: rekenen met positieve bedragen (geldopnamen)
