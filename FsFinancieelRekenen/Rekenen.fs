@@ -53,7 +53,7 @@ module Common =
 module TwRekenUtils =
 
          // Renteberekening met e^(r * t)
-// erekenToekomstwaardeMetEulersGetal 1000 0.05 3.0 ==> 1163.83
+        // BerekenToekomstwaardeMetEulersGetal 1000 0.05 3.0 ==> 1163.83
     let BerekenToekomstigewaardeMetEulersGetal (hoofdsom: float) (rentePerunage: float) (tijd: float) : float =
         hoofdsom * Math.Exp (rentePerunage * tijd)
 
@@ -70,6 +70,9 @@ module TwRekenUtils =
     // TODO: rekenen met positieve bedragen (geldopnamen)
     let TW (interestPerunage: float) (aantalTermijnen: float) (bet: float) (hw: float)
                                     (pXNumerando: Common.PXNumerando) : float =
+// Sortingen zijn negatieve bedragen. Maak ze bedragen positief om een positieve uitkomst te krijgen.
+        let hw = -hw
+        let bet = -bet
         if interestPerunage = 0.0 then
             let resultaat = hw + bet * float aantalTermijnen
             resultaat

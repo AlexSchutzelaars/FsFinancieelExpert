@@ -107,7 +107,7 @@ let maakToekomstigeWaardeFormulier () =
                 if aantalmaanden > 0 then
                     let extraTijdeenheden = (float aantalmaanden / 12.0)
                     aantalTijdeenheden <- aantalTijdeenheden + float extraTijdeenheden
-                resultaat <- TwRekenUtils.TW (interestPerunage) aantalTijdeenheden (-inlegPeriodiek) (-inlegInitieel) pXNumerando
+                resultaat <- TwRekenUtils.TW (interestPerunage) aantalTijdeenheden (inlegPeriodiek) (inlegInitieel) pXNumerando
             
         // Gebruik de huidige systeemcultuur
             let systeemCultuur = CultureInfo.CurrentCulture.Clone() :?> CultureInfo
