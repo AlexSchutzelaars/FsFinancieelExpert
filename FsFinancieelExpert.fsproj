@@ -6,6 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p153.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p154.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p155.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p156.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p157.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p158.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p159.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p160.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p161.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p162.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p163.png" />
+    <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p164.png" />
+    <None Include="Documentatie\Financieel_rekenwerk_V3.xlsx" />
     <Content Include="XmlBestanden\FundInfoAlleBanken.xml" />
     <Compile Include="ToonDocumentatie.fs" />
     <Compile Include="HuidigeWaarde.fs" />

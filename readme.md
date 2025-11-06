@@ -2,6 +2,7 @@
 
 Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Op dot moement (9 oktober 2025) kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
 Er is ook een klein C#-projectje met een voorbeeld berekening van de toekomsytige waarde van een hoofdsom en en periodike inleg. En er is een Racker module die de zelfde functionaliteit biedt (met GUI-schil) als het scherm voor de eindwaarde -berekening in het F#-project.
+En er is ook een Racket-programma met een GUI-schil dat dezelfde functionaliteit biedt als het scherm voor de eindwaarde -berekening in het F#-project.
 
 ## Beschrijving
 
@@ -50,6 +51,10 @@ De toekomstige waarde wordt getoond. (Je kunt ook de knop "Voorbeeldgegevens" ge
 - of je periodiek wilt inleggen (en zo ja, hoeveel per periode).
 - of de inleg aan het begin of aan het einde van de periode plaatsvindt (respectievelijk pre- en postnumerando).
 - of de rente jaarlijks, halfjaarlijks, per kwartaal, maandelijks of dagelijks wordt berekend.
+
+- Voorbeeld zie de afbeelding hieronder (uit Basisboek Wiskunde en financiële rekenkunfe p.153) voor een concrete eindwaarde-berekening:
+
+![Voorbeeld 4.8](../FsFinancieelExpert/Documentatie/Basisboek_wiskunde_en_financiele_rekenkunde_p153.png)
 
 Contante waarde: voer de gegevens in (toekomstige waarde (= doelwaarde in de toekomst), rentepercentage, aantal jaren), en klik op "Bereken". De contante waarde wordt getoond. Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.  
 
