@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		financieelexpert.rkt = financieelexpert.rkt
-		Financieel_rekenwerk_V3.xlsx = Financieel_rekenwerk_V3.xlsx
 		readme.md = readme.md
 		rekentest.linq = rekentest.linq
 	EndProjectSection
@@ -18,6 +17,11 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelExpert.Test", "FsFinancieelExpert.Test\FsFinancieelExpert.Test.fsproj", "{3A8FB99B-FE70-4331-8108-026185F400B1}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelRekenen", "FsFinancieelRekenen\FsFinancieelRekenen.fsproj", "{88B46C75-0985-405A-8846-2C7FBE11168C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentatie", "Documentatie", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Financieel_rekenwerk_V3.xlsx = Financieel_rekenwerk_V3.xlsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
