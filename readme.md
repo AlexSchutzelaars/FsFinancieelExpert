@@ -1,8 +1,10 @@
 # FsFinancieelExpert
 
-Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Op dot moement (9 oktober 2025) kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
-Er is ook een klein C#-projectje met een voorbeeld berekening van de toekomsytige waarde van een hoofdsom en en periodike inleg. En er is een Racker module die de zelfde functionaliteit biedt (met GUI-schil) als het scherm voor de eindwaarde -berekening in het F#-project.
-En er is ook een Racket-programma met een GUI-schil dat dezelfde functionaliteit biedt als het scherm voor de eindwaarde -berekening in het F#-project.
+Voorbeelden van financiële berekeningen in een F# ("Fs") Windows Forms applicatie. NB: De applicatie is nog in een ALPHA-status, en zal/moet verder ontwikkeld worden. Op dit moement 6 november 2025) kan schrijver dezes (Alex Schutzelaars) er niet voor instaan dat alle berekende waarden correct zijn.
+Er is ook een klein C#-projectje met een voorbeeld berekening van de toekomstige waarde van een hoofdsom en en periodike inleg. En er is een Racker module die de zelfde functionaliteit biedt (met GUI-schil) als het scherm voor de eindwaarde -berekening in het F#-project.
+En er is ook 
+- een Racket-programma (financieel-expert-gui.rkt) met een GUI-schil dat dezelfde functionaliteit biedt als het scherm voor de eindwaarde -berekening in het F#-project.
+- een F# Linqpad script (rekentest.linq) met een deel van de functionaliteit als het scherm voor de eindwaarde -berekening in het F#-project.
 
 ## Beschrijving
 
