@@ -52,9 +52,10 @@ De toekomstige waarde wordt getoond. (Je kunt ook de knop "Voorbeeldgegevens" ge
 - of de inleg aan het begin of aan het einde van de periode plaatsvindt (respectievelijk pre- en postnumerando).
 - of de rente jaarlijks, halfjaarlijks, per kwartaal, maandelijks of dagelijks wordt berekend.
 
-- Voorbeeld zie de afbeelding hieronder (uit Basisboek Wiskunde en financiële rekenkunfe p.153) voor een concrete eindwaarde-berekening:
+- Voorbeeld zie de afbeelding hieronder (uit Basisboek Wiskunde en financiële rekenkunde, p.153) voor een concrete eindwaarde-berekening:
 
-![Voorbeeld 4.8](../FsFinancieelExpert/Documentatie/Basisboek_wiskunde_en_financiele_rekenkunde_p153.png)
+![Voorbeeld 4.8](./Documentatie/Basisboek_wiskunde_en_financiele_rekenkunde_p153.png)
+
 
 Contante waarde: voer de gegevens in (toekomstige waarde (= doelwaarde in de toekomst), rentepercentage, aantal jaren), en klik op "Bereken". De contante waarde wordt getoond. Je kunt ook de knop "Voorbeeldgegevens" gebruiken om voorbeeldgegevens in te vullen.  
 
