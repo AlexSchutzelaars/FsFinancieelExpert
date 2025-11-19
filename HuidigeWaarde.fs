@@ -59,18 +59,12 @@ let maakHwFormulier () =
     let lblRentePercentage = new Label(Text = "Rente (%)", Top = 100, Left = 10, Width = 100)
     let txtRentePercentage = new TextBox(Top = 120, Left = 10, Width = 100)
 
-    let chkPostnumerando = new CheckBox()
-    chkPostnumerando.Text <- "Postnumerando"
-    chkPostnumerando.Top <- 100
-    chkPostnumerando.Left <- 150
-    chkPostnumerando.Width <- 200
-    chkPostnumerando.Checked <- true
+    let chkPostnumerando = new CheckBox(Text = "Postnumerando", Top = 100, Left = 150, Width = 200, Checked = true)
 
     let lblAantalTermijnen = new Label(Text = "Aantal termijnen (jaren)", Top = 140, Left = 10, Width = 200)
     let txtAantalTermijnen = new TextBox(Top = 160, Left = 10, Width = 100)
     let lblHuidigeWaarde = new Label(Text = "Huidige waarde", Top = 180, Left = 10, Width = 200)
-    let txtHuidigeWaarde = new TextBox(Top = 200, Left = 10, Width = 200)
-    txtHuidigeWaarde.ReadOnly <- true 
+    let txtHuidigeWaarde = new TextBox(Top = 200, Left = 10, Width = 200, ReadOnly = true)
     let btnBereken = new Button(Text = "Bereken", Top = 240, Left = 10)
     let btnTerug = new Button(Text = "Naar hoofdscherm", Top = 240, Left = 120, Width = 200)
     let btnVoorbeeldHw = new Button(Text = "Voorbeeld-data", Top = 240, Left = 420, Width = 100, BackColor = Color.LightGreen )

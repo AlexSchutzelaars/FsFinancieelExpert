@@ -41,10 +41,7 @@ let getDataForFund(fundNode: XmlNode) =
 // Maak het formulier voor de effectenportefeuille
 let maakEffectenPortefeuilleFormulier () =
     let frmEffectenportefeuille = new Form(Text = "Bekijk uw effectenportefeuille", Width = 700, Height = 400)
-
-    let clientsize = new System.Drawing.Size(700, 430)
-    let fundsForm = new Form(MaximizeBox = false, Text = "Fonds-info", ClientSize = clientsize, StartPosition = FormStartPosition.CenterScreen)
-
+ 
     // Maak een TextBox om het pad te tonen
     let startY_ButtonXmlPath = 20
 
@@ -60,12 +57,13 @@ let maakEffectenPortefeuilleFormulier () =
     dateTimePicker.MinDate = new DateTime(2019, 1, 1) |> ignore
 
     let startY_LBoxFunds = startY_DateTime + 40
-    let lboxFunds = new ListBox(Left = 20, Top = startY_LBoxFunds, Height = 50, Width = 300)
+    let lboxFunds = new ListBox(Left = 20, Top = startY_LBoxFunds, Height = 50, Width = 200)
+    let btnTotalAllFunds = new Button(Text = "Totaal van portefeuille", Left = 250, Top = startY_LBoxFunds, Width = 200)
     let startY_LabelCalculatedValue = startY_LBoxFunds + lboxFunds.Height + 20
     let startY_TextCalculatedValue = startY_LabelCalculatedValue + 20
-    let lblCalculatedForFund = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 250)
-    let txtCalculatedForFund = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true)
-    let txtPeildatumForFund = new TextBox(Left = 150, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true)
+    let lblCalculatedForFunds = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 250)
+    let txtCalculatedForFunds = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true, Enabled = false)
+    let txtPeildatumForFund = new TextBox(Left = 150, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true, Enabled = false)
     let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Left = 20, Top = startY_TextCalculatedValue + 40,Width = 200)
 
     // Event handler voor de bestand-selectieknop
@@ -79,7 +77,7 @@ let maakEffectenPortefeuilleFormulier () =
 
     btnXmlBestand.Click.Add(fun _ -> 
         lboxFunds.Items.Clear()
-        txtCalculatedForFund.Visible <- false
+        txtCalculatedForFunds.Visible <- false
         let xmlFileName = txtXmlBestand.Text
         if File.Exists xmlFileName then
             let funds = getFundNodes(xmlFileName)
@@ -103,28 +101,46 @@ let maakEffectenPortefeuilleFormulier () =
   
                                         if measurement.MeasurementDate = "2019-01-01" then
                                         // geen meting gevonden
-                                          txtCalculatedForFund.Visible <- false
+                                          txtCalculatedForFunds.Visible <- false
                                         else
+                                          lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor fonds"
                                           let calculatedValue = (measurement.HowMany*measurement.Price)
-                                          txtCalculatedForFund.Visible <- true
-                                          txtCalculatedForFund.Text <- calculatedValue.ToString(".00")
+                                          txtCalculatedForFunds.Visible <- true
+                                          txtCalculatedForFunds.Text <- calculatedValue.ToString(".00")
                                           txtPeildatumForFund.Visible <- true
                                           txtPeildatumForFund.Text <- measurement.MeasurementDate )
-                                          
-    btnTerug.Click.Add(fun _ -> frmEffectenportefeuille.Close())
+    
+    btnTotalAllFunds.Click.Add(fun _ -> 
+        let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
+        let xmlFileName = txtXmlBestand.Text
+        let funds = getFundNodes(xmlFileName)
+        let mutable totalValue = 0.0
+        for fundNode in funds do
+            let fundData = getDataForFund(fundNode)
+            let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
+            let mutable measurement = {MeasurementDate = "2019-01-01"; HowMany = 0.0; Price = 0.0}
+            for m in fondsinfoOpDatum do
+                if m.MeasurementDate <= theDate then
+                    measurement <- m
+            if measurement.MeasurementDate <> "2019-01-01" then
+                lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor alle fondsen in de portefeuille"
+                let calculatedValue = (measurement.HowMany*measurement.Price)
+                totalValue <- totalValue + calculatedValue
+                txtCalculatedForFunds.Text <- totalValue.ToString(".00")
+                txtPeildatumForFund.Text <- theDate
+        // MessageBox.Show(sprintf "Totale marktwaarde van de effectenportefeuille op %s is %.2f" theDate totalValue) |> ignore
+    )
 
-    fundsForm.Controls.Add dateTimePicker
-    fundsForm.Controls.Add btnXmlBestand
-    fundsForm.Controls.Add txtXmlBestand
-    fundsForm.Controls.Add lboxFunds
-    fundsForm.Controls.Add txtCalculatedForFund
+    btnTerug.Click.Add(fun _ -> frmEffectenportefeuille.Close())
 
     frmEffectenportefeuille.Controls.Add dateTimePicker
     frmEffectenportefeuille.Controls.Add btnXmlBestand
     frmEffectenportefeuille.Controls.Add txtXmlBestand
     frmEffectenportefeuille.Controls.Add lboxFunds
-    frmEffectenportefeuille.Controls.Add lblCalculatedForFund
-    frmEffectenportefeuille.Controls.Add txtCalculatedForFund
+    frmEffectenportefeuille.Controls.Add btnTotalAllFunds
+
+    frmEffectenportefeuille.Controls.Add lblCalculatedForFunds
+    frmEffectenportefeuille.Controls.Add txtCalculatedForFunds
     frmEffectenportefeuille.Controls.Add txtPeildatumForFund
     frmEffectenportefeuille.Controls.Add(btnTerug)
     frmEffectenportefeuille
