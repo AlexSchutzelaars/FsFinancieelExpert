@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36429.23
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11217.181 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelExpert", "FsFinancieelExpert.fsproj", "{D1E79822-5A3A-C1BB-2BB1-2A497E2C63D8}"
 EndProject
@@ -17,6 +17,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelExpert.Test", "FsFinancieelExpert.Test\FsFinancieelExpert.Test.fsproj", "{3A8FB99B-FE70-4331-8108-026185F400B1}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsFinancieelRekenen", "FsFinancieelRekenen\FsFinancieelRekenen.fsproj", "{88B46C75-0985-405A-8846-2C7FBE11168C}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "XmlFundLoader", "..\FundInfoXml\XmlFundLoader.fsproj", "{2F72A86C-050C-4973-9CD4-B54592E48BA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,10 @@ Global
 		{88B46C75-0985-405A-8846-2C7FBE11168C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88B46C75-0985-405A-8846-2C7FBE11168C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88B46C75-0985-405A-8846-2C7FBE11168C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F72A86C-050C-4973-9CD4-B54592E48BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F72A86C-050C-4973-9CD4-B54592E48BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F72A86C-050C-4973-9CD4-B54592E48BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F72A86C-050C-4973-9CD4-B54592E48BA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
