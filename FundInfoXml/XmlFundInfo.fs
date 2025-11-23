@@ -1,4 +1,4 @@
-﻿namespace XmlFundLoader
+﻿namespace FundReader
 
 open System
 open System.Globalization
@@ -15,13 +15,20 @@ module XmlFundLoader =
         override this.ToString() =
             sprintf "Date=%O; HowMany=%M; Price=%M; Value=%M" this.Date this.HowMany this.Price this.Value
 
-    type Fund(provider: string, name: string, description: string, timeslice: TimeSlice) =
+    type Fund(provider: string, name: string, description: string, timeSlices: TimeSlice list) =
         member _.Provider = provider
         member _.Name = name
         member _.Description = description
-        member _.TimeSlice = timeslice
+        member _.TimeSlices = timeSlices
+        /// Kies meest recente TimeSlice op datum; als geen TimeSlice aanwezig: DateTime.MinValue en 0
+        member _.MostRecentTimeSlice =
+            match timeSlices with
+            | [] -> TimeSlice(DateTime.MinValue, 0M, 0M)
+            | _ -> timeSlices |> List.maxBy (fun ts -> ts.Date)
+        /// Som van alle values (useful als meerdere posities)
+        member _.TotalValue = timeSlices |> List.sumBy (fun ts -> ts.Value)
         override this.ToString() =
-            sprintf "%s | %s | %s | %s" provider name description (timeslice.ToString())
+            sprintf "%s | %s | %s | slices=%d | total=%M" provider name description (List.length timeSlices) (this.TotalValue)
 
     /// Container/repository
     type FundRepository (funds: Fund list) =
@@ -29,9 +36,9 @@ module XmlFundLoader =
         member _.GetByProvider(provider: string) =
             funds |> List.filter (fun f -> String.Equals(f.Provider, provider, StringComparison.OrdinalIgnoreCase))
         member _.TotalValue() =
-            funds |> List.sumBy (fun f -> f.TimeSlice.Value)
+            funds |> List.sumBy (fun f -> f.TotalValue)
         override _.ToString() =
-            sprintf "FundRepository with %d funds (total value: %M)" (List.length funds) (funds |> List.sumBy (fun f -> f.TimeSlice.Value))
+            sprintf "FundRepository with %d funds (total value: %M)" (List.length funds) (funds |> List.sumBy (fun f -> f.TotalValue))
 
     /// Helper: veilige elementleesfunctie
     let private getChildValue (parent: XElement) (name: string) : string option =
@@ -56,30 +63,72 @@ module XmlFundLoader =
             try Some (DateTime.Parse(s, CultureInfo.InvariantCulture)) with _ -> None
         | _ -> None
 
-    /// Core: laad en parse XML naar FundRepository
-    let LoadFromFile (path: string) : FundRepository =
+    /// Parse één TimeSlice XElement naar TimeSlice option (None als onbruikbaar)
+    let private parseTimeSlice (tsElem: XElement) : TimeSlice option =
+        let dateOpt = tryParseDateInvariant (getChildValue tsElem "Date")
+        let howManyOpt = tryParseDecimalInvariant (getChildValue tsElem "HowMany")
+        let priceOpt = tryParseDecimalInvariant (getChildValue tsElem "Price")
+        match dateOpt, howManyOpt, priceOpt with
+        | Some d, Some h, Some p -> Some (TimeSlice(d, h, p))
+        | _ -> None
+
+    /// Core parser: retourneert Fund list en biedt 2 helper loaders:
+    ///  - LoadFromFileChooseMostRecent: per fund enkel de meest recente timeslice gebruikt (in Fund.MostRecentTimeSlice)
+    ///  - LoadFromFileSumSlices: per fund alle timeslices ingelezen en opgeteld in Fund.TotalValue
+    let private loadFundsGeneric (path: string) : Fund list =
         let xdoc = XDocument.Load(path)
         let root = xdoc.Root
-        if isNull root then
-            FundRepository([])
+        if isNull root then []
         else
             let fundElems = root.Elements(XName.Get("fund"))
             let parseFund (fe: XElement) =
                 let provider = getChildValue fe "Provider" |> Option.defaultValue ""
                 let name = getChildValue fe "Name" |> Option.defaultValue ""
                 let description = getChildValue fe "Description" |> Option.defaultValue ""
-                let tsElem = fe.Element(XName.Get("TimeSlice"))
-                let date = tryParseDateInvariant (if isNull tsElem then None else getChildValue tsElem "Date") |> Option.defaultValue DateTime.MinValue
-                let howMany = tryParseDecimalInvariant (if isNull tsElem then None else getChildValue tsElem "HowMany") |> Option.defaultValue 0M
-                let price = tryParseDecimalInvariant (if isNull tsElem then None else getChildValue tsElem "Price") |> Option.defaultValue 0M
-                let ts = TimeSlice(date, howMany, price)
-                Fund(provider, name, description, ts)
-            let funds = fundElems |> Seq.map parseFund |> Seq.toList
-            FundRepository(funds)
+                // alle TimeSlice child elementen
+                let tsElems = fe.Elements(XName.Get("TimeSlice")) |> Seq.toList
+                let parsedTs = tsElems |> List.choose parseTimeSlice
+                Fund(provider, name, description, parsedTs)
+            fundElems |> Seq.map parseFund |> Seq.toList
 
-    /// Voorbeeldgebruik (commentaar: zet pad naar jouw bestand)
-    (*
-    let repo = XmlFundLoader.LoadFromFile @"C:\pad\naar\FundInfoAlleBanken.xml"
-    printfn "%O" repo
-    repo.Funds |> List.iter (fun f -> printfn "%s -> value: %M" f.Name f.TimeSlice.Value)
-    *)
+    /// Public loaders
+    let LoadFromFile (path: string) : FundRepository =
+        FundRepository(loadFundsGeneric path)
+
+    /// Convenience: identiek aan LoadFromFile, maar naam die expliciet laat zien dat meerdere slices ondersteund worden
+    let LoadFromFileSumSlices = LoadFromFile
+
+    /// Convenience: maak een repository waarin elke fund slechts één timeslice heeft: de meest recente (voor situaties waar je enkel de laatste snapshot wilt)
+    let LoadFromFileChooseMostRecent (path: string) : FundRepository =
+        let funds = loadFundsGeneric path
+                    |> List.map (fun f ->
+                        let most = f.MostRecentTimeSlice
+                        Fund(f.Provider, f.Name, f.Description, [most]))
+        FundRepository(funds)
+
+    /// Berekent de totale waarde voor een fonds op basis van de laatst beschikbare datum <= asOf.
+    /// - zoekt alle TimeSlices voor alle providers met Date <= asOf
+    /// - vindt de maximale datum (latestDate)
+    /// - telt alleen de TimeSlices op met laatste Date <= asOf
+    /// Voorbeeld:
+    /// ```fsharp
+    /// let repo = LoadFromFileSumSlices @"C:\Pad\Naar\FundInfoAlleBanken.xml"
+    /// let peildatum = DateTime(2025, 8, 31)
+    /// let totaal = TotalValueForFundAsOfDate repo "ASN AandelenFonds" peildatum
+    /// printfn "Totale waarde voor ASN AandelenFonds (laatste datum ≤ %O) = %M" peildatum totaal
+    let TotalValueForFundAsOfDate (repo: FundRepository) (fundName: string) (asOf: DateTime) : decimal =
+            // verzamel alle TimeSlices voor het fonds (case-insensitive naam) met Date <= asOf
+        let relevantSlices =
+                repo.Funds
+                |> List.filter (fun f -> String.Equals(f.Name, fundName, StringComparison.OrdinalIgnoreCase))
+                |> List.collect (fun f -> f.TimeSlices)
+                |> List.filter (fun ts -> ts.Date <= asOf)
+
+        match relevantSlices with
+            | [] -> 0M
+            | _ ->
+                let latestDate = relevantSlices |> List.maxBy (fun ts -> ts.Date) |> fun ts -> ts.Date
+                relevantSlices
+                |> List.filter (fun ts -> ts.Date = latestDate)
+                |> List.sumBy (fun ts -> ts.Value)
+
