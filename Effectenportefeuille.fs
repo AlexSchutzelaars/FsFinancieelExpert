@@ -5,6 +5,7 @@ open System.Windows.Forms
 open System.Linq
 open System.Xml.Linq
 open System
+open FundReader
 
 type Measurement = {MeasurementDate: string; HowMany: double; Price: double}
 type FundInfo = {Provider: string; Name: string; Description: string; Measurements: List<Measurement>}
@@ -80,13 +81,17 @@ let maakEffectenPortefeuilleFormulier () =
         txtCalculatedForFunds.Visible <- false
         let xmlFileName = txtXmlBestand.Text
         if File.Exists xmlFileName then
-            let funds = getFundNodes(xmlFileName)
-            for index = 0 to funds.Count - 1 do
-                let fundInfo = getDataForFund(funds.[index])
+            let repo = XmlFundLoader.LoadFromFileSumSlices(xmlFileName)
+
+            // Iterate directly over the sequence/list of funds instead of using an index.
+            for fundInfo in repo.Funds do
                 let fundName = fundInfo.Name
                 lboxFunds.Items.Add(fundName) |> ignore
         )
 
+        // Event handler voor selectie in de ListBox
+        // Wanneer een fonds wordt geselecteerd, bereken en toon de marktwaarde op de gekozen datum
+        // TODO: gebruik de reeds aanwezige functies in XmlFundInfo.fs
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
                                         let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
                                         let xmlFileName = txtXmlBestand.Text
