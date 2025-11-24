@@ -25,6 +25,21 @@ module XmlFundLoader =
             match timeSlices with
             | [] -> TimeSlice(DateTime.MinValue, 0M, 0M)
             | _ -> timeSlices |> List.maxBy (fun ts -> ts.Date)
+
+
+        /// Kies meest recente TimeSlice op datum <= asOfDate; als geen TimeSlice aanwezig: DateTime.MinValue en 0
+        /// Renamed to avoid clash with parameterless property `MostRecentTimeSlice`.
+        member _.MostRecentTimeSliceAsOfDate(asOfDate: DateTime) =
+            match timeSlices with
+            | [] -> TimeSlice(DateTime.MinValue, 0M, 0M)
+            | _ ->
+                timeSlices
+                |> List.filter (fun ts -> ts.Date <= asOfDate)
+                |> fun filtered ->
+                    match filtered with
+                    | [] -> TimeSlice(DateTime.MinValue, 0M, 0M)
+                    | _ -> filtered |> List.maxBy (fun ts -> ts.Date)
+
         /// Som van alle values (useful als meerdere posities)
         member _.TotalValue = timeSlices |> List.sumBy (fun ts -> ts.Value)
         override this.ToString() =
@@ -99,36 +114,40 @@ module XmlFundLoader =
     let LoadFromFileSumSlices = LoadFromFile
 
     /// Convenience: maak een repository waarin elke fund slechts één timeslice heeft: de meest recente (voor situaties waar je enkel de laatste snapshot wilt)
-    let LoadFromFileChooseMostRecent (path: string) : FundRepository =
+    let LoadFromFileChooseLatestAsOfDate (path: string, asOfDate: DateTime) : FundRepository =
         let funds = loadFundsGeneric path
                     |> List.map (fun f ->
-                        let most = f.MostRecentTimeSlice
+                        let most = f.MostRecentTimeSliceAsOfDate(asOfDate)
                         Fund(f.Provider, f.Name, f.Description, [most]))
         FundRepository(funds)
 
-    /// Berekent de totale waarde voor een fonds op basis van de laatst beschikbare datum <= asOf.
-    /// - zoekt alle TimeSlices voor alle providers met Date <= asOf
-    /// - vindt de maximale datum (latestDate)
-    /// - telt alleen de TimeSlices op met laatste Date <= asOf
+    /// Geeft (totalValue, totalUnits) voor een fondsnaam op basis van de laatst beschikbare datum <= asOf.
+    /// - totalValue: som van (HowMany * Price) voor alle TimeSlices met Date = latestDate
+    /// - totalUnits: som van HowMany voor alle TimeSlices met Date = latestDate
+    /// Als geen TimeSlices gevonden: (0M, 0M)
+    /// Fundnaam is case-insensitive
     /// Voorbeeld:
-    /// ```fsharp
-    /// let repo = LoadFromFileSumSlices @"C:\Pad\Naar\FundInfoAlleBanken.xml"
-    /// let peildatum = DateTime(2025, 8, 31)
-    /// let totaal = TotalValueForFundAsOfDate repo "ASN AandelenFonds" peildatum
-    /// printfn "Totale waarde voor ASN AandelenFonds (laatste datum ≤ %O) = %M" peildatum totaal
-    let TotalValueForFundAsOfDate (repo: FundRepository) (fundName: string) (asOf: DateTime) : decimal =
-            // verzamel alle TimeSlices voor het fonds (case-insensitive naam) met Date <= asOf
+    ///   let peildatum = DateTime(2025, 8, 1)
+    ///   let (waarde, stukken) = TotalValueAndUnitsForFundAsOfLatestDate repo "ASN AandelenFonds" peildatum
+    let TotalValueAndNumberOfUnitsForFundAsOfGivenDate (repo: FundRepository) (fundName: string) (asOfDate: DateTime) : decimal * decimal =
+    // verzamel alle TimeSlices voor het fonds (case-insensitive naam) met Date <= asOfDate
         let relevantSlices =
-                repo.Funds
-                |> List.filter (fun f -> String.Equals(f.Name, fundName, StringComparison.OrdinalIgnoreCase))
-                |> List.collect (fun f -> f.TimeSlices)
-                |> List.filter (fun ts -> ts.Date <= asOf)
+            repo.Funds
+            |> List.filter (fun f -> String.Equals(f.Name, fundName, StringComparison.OrdinalIgnoreCase))
+            |> List.collect (fun f -> f.TimeSlices)
+            |> List.filter (fun ts -> ts.Date <= asOfDate)
 
         match relevantSlices with
-            | [] -> 0M
-            | _ ->
+            | [] -> (0M, 0M)
+             | _ ->
                 let latestDate = relevantSlices |> List.maxBy (fun ts -> ts.Date) |> fun ts -> ts.Date
-                relevantSlices
-                |> List.filter (fun ts -> ts.Date = latestDate)
-                |> List.sumBy (fun ts -> ts.Value)
+                let slicesOnLatest =
+                    relevantSlices
+                        |> List.filter (fun ts -> ts.Date = latestDate)
+                let totalValue = slicesOnLatest |> List.sumBy (fun ts -> ts.Value)
+                let totalUnits = slicesOnLatest |> List.sumBy (fun ts -> ts.HowMany)
+                (totalValue, totalUnits)
+
+
+
 
