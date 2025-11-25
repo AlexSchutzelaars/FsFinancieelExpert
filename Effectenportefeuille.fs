@@ -91,30 +91,34 @@ let maakEffectenPortefeuilleFormulier () =
 
         // Event handler voor selectie in de ListBox
         // Wanneer een fonds wordt geselecteerd, bereken en toon de marktwaarde op de gekozen datum
-        // TODO: gebruik de reeds aanwezige functies in XmlFundInfo.fs
+
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
-                                        let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
+                                        let selectedDate = dateTimePicker.Value;
                                         let xmlFileName = txtXmlBestand.Text
-                                        let funds = getFundNodes(xmlFileName)
+                                        let repo = XmlFundLoader.LoadFromFileSumSlices(xmlFileName)
+                                        let funds = repo.Funds
                                         let selectedFund = funds[lboxFunds.SelectedIndex]
-                                        let fundData = getDataForFund(selectedFund)
-                                        let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
-                                        let mutable measurement = {MeasurementDate = "2019-01-01"; HowMany = 0.0; Price = 0.0}
-                                        for m in fondsinfoOpDatum do
-                                          if m.MeasurementDate <= theDate then
-                                            measurement <- m
+                                        let fundData = selectedFund.TimeSlices
+                                        let fondsinfoOpDatum = fundData.ToList().OrderByDescending(fun m -> m.Date)
+                                        let minimalDate = (new DateTime(2000,1,1)).ToString("yyyy-MM-dd")
+                                        let mutable timeSlice = {MeasurementDate = minimalDate; HowMany = 0.0; Price = 0.0}
+                                        for ts in fondsinfoOpDatum do
+                                          if ts.Date <= selectedDate then
+                                            timeSlice <- {MeasurementDate = ts.Date.ToString(); 
+                                                        HowMany = Convert.ToDouble(ts.HowMany); Price = Convert.ToDouble(ts.Price)}
   
-                                        if measurement.MeasurementDate = "2019-01-01" then
+                                        if timeSlice.MeasurementDate = minimalDate then
                                         // geen meting gevonden
+                                          lblCalculatedForFunds.Text <- "Geen meting gevonden voor dit fonds op of vóór de gekozen datum"
                                           txtCalculatedForFunds.Visible <- false
                                         else
                                           lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor fonds"
-                                          let calculatedValue = (measurement.HowMany*measurement.Price)
+                                          let calculatedValue = (timeSlice.HowMany*timeSlice.Price)
                                           txtCalculatedForFunds.Visible <- true
                                           txtCalculatedForFunds.Text <- calculatedValue.ToString(".00")
                                           txtPeildatumForFund.Visible <- true
-                                          txtPeildatumForFund.Text <- measurement.MeasurementDate )
-    
+                                          txtPeildatumForFund.Text <- timeSlice.MeasurementDate )
+            // TODO: gebruik de reeds aanwezige functies in XmlFundInfo.fs
     btnTotalAllFunds.Click.Add(fun _ -> 
         let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
         let xmlFileName = txtXmlBestand.Text
@@ -123,7 +127,7 @@ let maakEffectenPortefeuilleFormulier () =
         for fundNode in funds do
             let fundData = getDataForFund(fundNode)
             let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
-            let mutable measurement = {MeasurementDate = "2019-01-01"; HowMany = 0.0; Price = 0.0}
+            let mutable measurement = {MeasurementDate = "2000-01-01"; HowMany = 0.0; Price = 0.0}
             for m in fondsinfoOpDatum do
                 if m.MeasurementDate <= theDate then
                     measurement <- m
