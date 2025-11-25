@@ -1,43 +1,12 @@
 module EffectenPortefeuille
 open System.IO
-open System.Xml
 open System.Windows.Forms
 open System.Linq
-open System.Xml.Linq
 open System
 open FundReader
 
 type Measurement = {MeasurementDate: string; HowMany: double; Price: double}
 type FundInfo = {Provider: string; Name: string; Description: string; Measurements: List<Measurement>}
-
-let getFundNodes(fileName: string)  =
-   let doc = new XmlDocument()
-   doc.Load fileName
-   let fundNodes1 = doc.SelectNodes("//funds/fund") |> Seq.cast<XmlNode>
-   let fundNodes2 = fundNodes1.ToList()
-   fundNodes2
-
-let getDataForFund(fundNode: XmlNode) =
-   let results = XDocument.Parse(fundNode.OuterXml).Descendants().ToList()
-   let providerName = results.Where(fun n -> n.Name = XName.Get "Provider").ToList().[0].Value
-   let fundName = results.Where(fun n -> n.Name = XName.Get "Name").ToList().[0].Value
-   let description = results.Where(fun d -> d.Name = XName.Get "Description").ToList().[0].Value
-
-   let timeslices = results.Where(fun t -> t.Name = XName.Get "TimeSlice").ToList()
-   let mutable measurements: List<Measurement> = []
-
-   for timeslice in timeslices do
-      let timesliceResults = XElement.Parse(timeslice.ToString()).Descendants().ToList()
-      // let testje = timesliceResults.Where(fun node -> node.Name = XName.Get "Date" && node.Value = "2021-04-13").ToList()
-      let measurementDate = timesliceResults.Where(fun n -> n.Name = XName.Get "Date").ToList().[0].Value
-      let howMany = timesliceResults.Where(fun n -> n.Name = XName.Get "HowMany").ToList().[0].Value
-      let price = timesliceResults.Where(fun n -> n.Name = XName.Get "Price").ToList().[0].Value
-      let measurement: Measurement = {MeasurementDate = measurementDate; HowMany = double(howMany); Price = double(price)}
-      measurements <- measurement::measurements
-   
-   let mutable fundInfo = {Provider = providerName; Name = fundName; Description = description;
-                            Measurements = measurements}
-   fundInfo
 
 // Maak het formulier voor de effectenportefeuille
 let maakEffectenPortefeuilleFormulier () =
@@ -62,9 +31,9 @@ let maakEffectenPortefeuilleFormulier () =
     let btnTotalAllFunds = new Button(Text = "Totaal van portefeuille", Left = 250, Top = startY_LBoxFunds, Width = 200)
     let startY_LabelCalculatedValue = startY_LBoxFunds + lboxFunds.Height + 20
     let startY_TextCalculatedValue = startY_LabelCalculatedValue + 20
-    let lblCalculatedForFunds = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 250)
-    let txtCalculatedForFunds = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true, Enabled = false)
-    let txtPeildatumForFund = new TextBox(Left = 150, Top = startY_TextCalculatedValue, Height = 20, Width = 90, Visible = true, Enabled = false)
+    let lblCalculatedForFunds = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 400)
+    let txtCalculatedForFunds = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 90, ReadOnly = true)
+    let txtPeildatumForFund = new TextBox(Left = 150, Top = startY_TextCalculatedValue, Height = 20, Width = 90, ReadOnly = true)
     let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Left = 20, Top = startY_TextCalculatedValue + 40,Width = 200)
 
     // Event handler voor de bestand-selectieknop
@@ -78,7 +47,6 @@ let maakEffectenPortefeuilleFormulier () =
 
     btnXmlBestand.Click.Add(fun _ -> 
         lboxFunds.Items.Clear()
-        txtCalculatedForFunds.Visible <- false
         let xmlFileName = txtXmlBestand.Text
         if File.Exists xmlFileName then
             let repo = XmlFundLoader.LoadFromFileSumSlices(xmlFileName)
@@ -99,47 +67,59 @@ let maakEffectenPortefeuilleFormulier () =
                                         let funds = repo.Funds
                                         let selectedFund = funds[lboxFunds.SelectedIndex]
                                         let fundData = selectedFund.TimeSlices
-                                        let fondsinfoOpDatum = fundData.ToList().OrderByDescending(fun m -> m.Date)
+                                        let fondsinfoOpDatum = fundData.ToList().OrderBy(fun m -> m.Date)
                                         let minimalDate = (new DateTime(2000,1,1)).ToString("yyyy-MM-dd")
-                                        let mutable timeSlice = {MeasurementDate = minimalDate; HowMany = 0.0; Price = 0.0}
-                                        for ts in fondsinfoOpDatum do
-                                          if ts.Date <= selectedDate then
-                                            timeSlice <- {MeasurementDate = ts.Date.ToString(); 
-                                                        HowMany = Convert.ToDouble(ts.HowMany); Price = Convert.ToDouble(ts.Price)}
+                                        let mutable measurement = {MeasurementDate = minimalDate; HowMany = 0.0; Price = 0.0}
+                                        for ms in fondsinfoOpDatum do
+                                          if ms.Date <= selectedDate then
+                                            measurement <- {MeasurementDate = ms.Date.ToString(); 
+                                                        HowMany = Convert.ToDouble(ms.HowMany); Price = Convert.ToDouble(ms.Price)}
   
-                                        if timeSlice.MeasurementDate = minimalDate then
+                                        if measurement.MeasurementDate = minimalDate then
                                         // geen meting gevonden
                                           lblCalculatedForFunds.Text <- "Geen meting gevonden voor dit fonds op of vóór de gekozen datum"
-                                          txtCalculatedForFunds.Visible <- false
+                                          txtPeildatumForFund.Text <- ""
+                                          txtCalculatedForFunds.Text <- ""
                                         else
                                           lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor fonds"
-                                          let calculatedValue = (timeSlice.HowMany*timeSlice.Price)
-                                          txtCalculatedForFunds.Visible <- true
+                                          let calculatedValue = (measurement.HowMany*measurement.Price)
                                           txtCalculatedForFunds.Text <- calculatedValue.ToString(".00")
-                                          txtPeildatumForFund.Visible <- true
-                                          txtPeildatumForFund.Text <- timeSlice.MeasurementDate )
-            // TODO: gebruik de reeds aanwezige functies in XmlFundInfo.fs
+                                          txtPeildatumForFund.Text <- measurement.MeasurementDate )
+    
+    // Event handler voor de knop om de totale marktwaarde van alle fondsen te berekenen
     btnTotalAllFunds.Click.Add(fun _ -> 
-        let theDate = dateTimePicker.Value.ToString("yyyy-MM-dd");
+        let selectedDate = dateTimePicker.Value
+        let minimalDate = (new DateTime(2000,1,1)).ToString("yyyy-MM-dd")
+                                       
         let xmlFileName = txtXmlBestand.Text
-        let funds = getFundNodes(xmlFileName)
+        let repo = XmlFundLoader.LoadFromFileSumSlices(xmlFileName)
+        let funds = repo.Funds
         let mutable totalValue = 0.0
-        for fundNode in funds do
-            let fundData = getDataForFund(fundNode)
-            let fondsinfoOpDatum = fundData.Measurements.ToList().OrderByDescending(fun m -> m.MeasurementDate)
-            let mutable measurement = {MeasurementDate = "2000-01-01"; HowMany = 0.0; Price = 0.0}
-            for m in fondsinfoOpDatum do
-                if m.MeasurementDate <= theDate then
-                    measurement <- m
-            if measurement.MeasurementDate <> "2019-01-01" then
+        for fund in funds do
+            let fondsinfoOpDatum = fund.TimeSlices.OrderBy(fun m -> m.Date)
+            let mutable measurement = {MeasurementDate = minimalDate; HowMany = 0.0; Price = 0.0}
+            // Zoek de meest recente meting op of vóór de geselecteerde datum
+            for ms in fondsinfoOpDatum do
+               if ms.Date <= selectedDate then
+                  measurement <- {MeasurementDate = ms.Date.ToString(); 
+                                HowMany = Convert.ToDouble(ms.HowMany); 
+                                Price = Convert.ToDouble(ms.Price)}
+
+            if measurement.MeasurementDate = minimalDate then
+                // geen meting gevonden voor dit fonds op of vóór de geselecteerde datum
+                lblCalculatedForFunds.Text <- "Geen metingen (op of VOOR de gekozen datum) gevonden"
+                txtCalculatedForFunds.Text <- ""
+                txtPeildatumForFund.Text <- ""
+            else
                 lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor alle fondsen in de portefeuille"
-                let calculatedValue = (measurement.HowMany*measurement.Price)
+                let calculatedValue = measurement.HowMany*measurement.Price
                 totalValue <- totalValue + calculatedValue
                 txtCalculatedForFunds.Text <- totalValue.ToString(".00")
-                txtPeildatumForFund.Text <- theDate
+                txtPeildatumForFund.Text <- measurement.MeasurementDate
         // MessageBox.Show(sprintf "Totale marktwaarde van de effectenportefeuille op %s is %.2f" theDate totalValue) |> ignore
     )
 
+    // Event handler voor de terug-knop [terug naar hoofdscherm]
     btnTerug.Click.Add(fun _ -> frmEffectenportefeuille.Close())
 
     frmEffectenportefeuille.Controls.Add dateTimePicker
