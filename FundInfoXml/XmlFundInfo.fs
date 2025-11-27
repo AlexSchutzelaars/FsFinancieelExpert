@@ -20,15 +20,9 @@ module XmlFundLoader =
         member _.Name = name
         member _.Description = description
         member _.TimeSlices = timeSlices
-        /// Kies meest recente TimeSlice op datum; als geen TimeSlice aanwezig: DateTime.MinValue en 0
-        member _.MostRecentTimeSlice =
-            match timeSlices with
-            | [] -> TimeSlice(DateTime.MinValue, 0M, 0M)
-            | _ -> timeSlices |> List.maxBy (fun ts -> ts.Date)
 
-
-        /// Kies meest recente TimeSlice op datum <= asOfDate; als geen TimeSlice aanwezig: DateTime.MinValue en 0
-        /// Renamed to avoid clash with parameterless property `MostRecentTimeSlice`.
+        /// Kies meest recente TimeSlice op datum <= asOfDate;
+        /// als geen TimeSlice aanwezig: DateTime.MinValue en 0
         member _.MostRecentTimeSliceAsOfDate(asOfDate: DateTime) =
             match timeSlices with
             | [] -> TimeSlice(DateTime.MinValue, 0M, 0M)
@@ -114,7 +108,7 @@ module XmlFundLoader =
     let LoadFromFileSumSlices = LoadFromFile
 
     /// Convenience: maak een repository waarin elke fund slechts één timeslice heeft: de meest recente (voor situaties waar je enkel de laatste snapshot wilt)
-    let LoadFromFileChooseLatestAsOfDate (path: string, asOfDate: DateTime) : FundRepository =
+    let LoadFundsChooseLatestAsOfDate (path: string, asOfDate: DateTime) : FundRepository =
         let funds = loadFundsGeneric path
                     |> List.map (fun f ->
                         let most = f.MostRecentTimeSliceAsOfDate(asOfDate)
