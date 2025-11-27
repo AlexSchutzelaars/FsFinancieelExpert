@@ -122,8 +122,8 @@ module XmlFundLoader =
     /// Fundnaam is case-insensitive
     /// Voorbeeld:
     ///   let peildatum = DateTime(2025, 8, 1)
-    ///   let (waarde, stukken) = TotalValueAndUnitsForFundAsOfLatestDate repo "ASN AandelenFonds" peildatum
-    let TotalValueAndNumberOfUnitsForFundAsOfGivenDate (repo: FundRepository) (fundName: string) (asOfDate: DateTime) : decimal * decimal =
+    ///   let (peildatum, waarde, stukken) = StatisticsForFundAsOfGivenDate repo "ASN AandelenFonds" peildatum
+    let StatisticsForFundAsOfGivenDate (repo: FundRepository) (fundName: string) (asOfDate: DateTime) : DateTime*decimal * decimal =
     // verzamel alle TimeSlices voor het fonds (case-insensitive naam) met Date <= asOfDate
         let relevantSlices =
             repo.Funds
@@ -132,7 +132,7 @@ module XmlFundLoader =
             |> List.filter (fun ts -> ts.Date <= asOfDate)
 
         match relevantSlices with
-            | [] -> (0M, 0M)
+            | [] -> (DateTime.MinValue, 0M, 0M)
              | _ ->
                 let latestDate = relevantSlices |> List.maxBy (fun ts -> ts.Date) |> fun ts -> ts.Date
                 let slicesOnLatest =
@@ -140,7 +140,7 @@ module XmlFundLoader =
                         |> List.filter (fun ts -> ts.Date = latestDate)
                 let totalValue = slicesOnLatest |> List.sumBy (fun ts -> ts.Value)
                 let totalUnits = slicesOnLatest |> List.sumBy (fun ts -> ts.HowMany)
-                (totalValue, totalUnits)
+                (latestDate, totalValue, totalUnits)
 
 
 

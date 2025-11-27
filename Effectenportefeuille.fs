@@ -55,39 +55,17 @@ let maakEffectenPortefeuilleFormulier () =
         )
        
     // Event handler voor selectie in de ListBox
-    // Wanneer een fonds wordt geselecteerd, bereken en toon de marktwaarde op de gekozen datum
-    // TODO: ophalen van laatste beschikbare datum voor het geselecteerde fonds <= gekozen datum
+    // Wanneer een fonds wordt geselecteerd, bereken en toon de marktwaarde op de laatst bekende datum <= pieldatum
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
                                         let selectedDate = dateTimePicker.Value;
                                         let xmlFileName = txtXmlBestand.Text
-                            
                                         let repo = XmlFundLoader.LoadFundsChooseLatestAsOfDate(xmlFileName, selectedDate)
-                                        let funds = repo.Funds
-                                        let selectedFund = funds[lboxFunds.SelectedIndex]
-                                        // let (calculatedValue, _) = XmlFundLoader.TotalValueAndNumberOfUnitsForFundAsOfGivenDate repo selectedFund.Name selectedDate
+                                        let selectedFund = repo.Funds[lboxFunds.SelectedIndex]
+                                        let (latestDate, calculatedValue, _) = XmlFundLoader.StatisticsForFundAsOfGivenDate repo selectedFund.Name selectedDate
                                         lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor fonds " + selectedFund.Name
-   
-                                        let fundData = selectedFund.TimeSlices
-                                        let minimalDate = (new DateTime(2000,1,1)).ToString("yyyy-MM-dd")
-                                        let mutable measurement = {MeasurementDate = minimalDate; HowMany = 0.0; Price = 0.0}
-                                        for ms in fundData do
-                                          if ms.Date <= selectedDate then
-                                            measurement <- {MeasurementDate = ms.Date.ToString(); 
-                                                        HowMany = Convert.ToDouble(ms.HowMany); Price = Convert.ToDouble(ms.Price)}
-  
-                                        if measurement.MeasurementDate = minimalDate then
-                                        // geen meting gevonden
-                                          lblCalculatedForFunds.Text <- "Geen meting gevonden voor dit fonds op of vóór de gekozen datum"
-                                          txtPeildatumForFund.Text <- ""
-                                          txtCalculatedForFunds.Text <- ""
-                                        else
-                                          lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor fonds"
-                                          let calculatedValue = (measurement.HowMany*measurement.Price)
-                                          txtCalculatedForFunds.Text <- calculatedValue.ToString(".00")
-                                          match DateTime.TryParse(measurement.MeasurementDate) with
-                                          | true, dt -> txtPeildatumForFund.Text <- dt.ToString("dd-MMM-yyyy", System.Globalization.CultureInfo.InvariantCulture)
-                                          | false, _ -> txtPeildatumForFund.Text <- measurement.MeasurementDate // fallback, raw string
-                                          )
+                                        txtCalculatedForFunds.Text <- calculatedValue.ToString(".00")
+                                        txtPeildatumForFund.Text <- latestDate.ToString("dd-MMM-yyyy", System.Globalization.CultureInfo.InvariantCulture)
+                                       )
 
     // Wanneer ingedrukt, bereken de totale marktwaarde van alle fondsen op de gekozen datum
     // TODO: berekenen van laatste beschikbare datum per fonds <= gekozen datum
@@ -102,7 +80,7 @@ let maakEffectenPortefeuilleFormulier () =
         lblCalculatedForFunds.Text <- "Marktwaarde voor alle fondsen in de portefeuille per peildatum"
         txtPeildatumForFund.Text <- selectedDate.ToString("dd-MMM-yyyy", System.Globalization.CultureInfo.InvariantCulture)
         for fund in funds do
-            let (calculatedValue, _) = XmlFundLoader.TotalValueAndNumberOfUnitsForFundAsOfGivenDate repo fund.Name selectedDate
+            let (_, calculatedValue, _) = XmlFundLoader.StatisticsForFundAsOfGivenDate repo fund.Name selectedDate
             totalValue <- totalValue + float calculatedValue
         txtCalculatedForFunds.Text <- totalValue.ToString(".00")
      
