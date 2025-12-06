@@ -28,7 +28,7 @@ let maakEffectenPortefeuilleFormulier () =
 
     let startY_LBoxFunds = startY_DateTime + 40
     let lboxFunds = new ListBox(Left = 20, Top = startY_LBoxFunds, Height = 50, Width = 200)
-    let btnTotalAllFunds = new Button(Text = "Totaal van portefeuille", Left = 250, Top = startY_LBoxFunds, Width = 200)
+    let btnTotalAllFunds = new Button(Text = "Totaal van portefeuille", Left = 250, Top = startY_LBoxFunds, Width = 200, Enabled = false)
     let startY_LabelCalculatedValue = startY_LBoxFunds + lboxFunds.Height + 20
     let startY_TextCalculatedValue = startY_LabelCalculatedValue + 20
     let lblCalculatedForFunds = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 400)
@@ -43,6 +43,7 @@ let maakEffectenPortefeuilleFormulier () =
         dialog.Title <- "Selecteer een XML-bestand"
         if dialog.ShowDialog() = DialogResult.OK then
             txtXmlBestand.Text <- dialog.FileName
+            btnTotalAllFunds.Enabled <- true
     )
 
     btnXmlBestand.Click.Add(fun _ -> 
