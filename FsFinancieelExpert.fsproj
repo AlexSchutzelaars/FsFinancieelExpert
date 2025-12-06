@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="DrRacket\finance-utils.rkt" />
+    <None Include="DrRacket\financieel-expert-gui.rkt" />
+    <None Include="Prolog\reken-menu\eindwaarde.pl" />
+    <None Include="Prolog\reken-menu\kwadrateren.pl" />
+    <None Include="Prolog\reken-menu\make_reken-menu.bat" />
+    <None Include="Prolog\reken-menu\reken-menu.pl" />
+    <None Include="Prolog\reken-menu\vaarwel.pl" />
     <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p153.png" />
     <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p154.png" />
     <Content Include="Documentatie\Basisboek_wiskunde_en_financiele_rekenkunde_p155.png" />
