@@ -1,0 +1,10 @@
+lpa_bereken_toekomst_waarde.pl. Versie van 16 oktober 2025. Gegenereerd met LPA Prolog.
+
+- Gedaan: decimaal-komma in getaltekst veranderen in punt.
+- 15-10-2025 Je kunt nu 2 getallen (hoofdsom en rente) invoeren in het scherm.
+- 16-10-2025 Looptijd nog toegevoegd (voor berekening eindwaarde).
+- 17-10-2025: Keuzelijst voor periode-interval toegevoegd. En vooraf numerieke waarden ingevuld in edit controls.
+  Nu wordt rekening gehouden met het gekozen rente-interval
+- 19-12-2025. In het rekenwerk wordt nu naast de periodieke inleg goed verwerkt: postnumerando, prenumerando nog te testen
+- 20-12-2025: wat refactoring voor de paramnters van het scherm
+- TE DOEN in modules splitsen.
