@@ -1,7 +1,5 @@
 module EffectenPortefeuille
-open System.IO
 open System.Windows.Forms
-open System.Linq
 open System
 open FundReader
 
@@ -31,9 +29,11 @@ let maakEffectenPortefeuilleFormulier () =
     let btnTotalAllFunds = new Button(Text = "Totaal van portefeuille", Left = 250, Top = startY_LBoxFunds, Width = 200, Enabled = false)
     let startY_LabelCalculatedValue = startY_LBoxFunds + lboxFunds.Height + 20
     let startY_TextCalculatedValue = startY_LabelCalculatedValue + 20
-    let lblCalculatedForFunds = new Label(Text = "Marktwaarde en peildatum voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 400)
-    let txtCalculatedForFunds = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 90, ReadOnly = true)
-    let txtPeildatumForFund = new TextBox(Left = 150, Top = startY_TextCalculatedValue, Height = 20, Width = 90, ReadOnly = true)
+    let lblCalculatedForFunds = new Label(Text = "Marktwaarde, peildatum, aantal stukken en koers voor fonds", Left = 20, Top = startY_LabelCalculatedValue, Height = 20, Width = 600)
+    let txtCalculatedForFunds = new TextBox(Left = 20, Top = startY_TextCalculatedValue, Height = 20, Width = 70, ReadOnly = true)
+    let txtPeildatumForFund = new TextBox(Left = 120, Top = startY_TextCalculatedValue, Height = 20, Width = 90, ReadOnly = true)
+    let txtPriceForFund = new TextBox(Left = 330, Top = startY_TextCalculatedValue, Height = 20, Width = 90, ReadOnly = true)
+    let txtNPositions = new TextBox(Left = 260, Top = startY_TextCalculatedValue, Height = 20, Width = 50, ReadOnly = true)
     let btnTerug = new Button(Text = "Terug naar financieel hoofdmenu", Left = 20, Top = startY_TextCalculatedValue + 40,Width = 200)
 
     // Event handler voor de bestand-selectieknop
@@ -58,13 +58,17 @@ let maakEffectenPortefeuilleFormulier () =
     // Event handler voor selectie in de ListBox
     // Wanneer een fonds wordt geselecteerd, bereken en toon de marktwaarde op de laatst bekende datum <= pieldatum
     lboxFunds.SelectedIndexChanged.Add(fun _ -> 
+                                        txtPriceForFund.Visible <- true
+                                        txtNPositions.Visible <- true
                                         let selectedDate = dateTimePicker.Value;
                                         let xmlFileName = txtXmlBestand.Text
                                         let repo = XmlFundLoader.LoadFundsChooseLatestAsOfDate(xmlFileName, selectedDate)
                                         let selectedFund = repo.Funds[lboxFunds.SelectedIndex]
-                                        let (latestDate, calculatedValue, _) = XmlFundLoader.StatisticsForFundAsOfGivenDate repo selectedFund.Name selectedDate
-                                        lblCalculatedForFunds.Text <- "Marktwaarde en peildatum voor fonds " + selectedFund.Name
-                                        txtCalculatedForFunds.Text <- calculatedValue.ToString(".00")
+                                        let (latestDate, calculatedValue, nPositions, price) = XmlFundLoader.StatisticsForFundAsOfGivenDate repo selectedFund.Name selectedDate
+                                        lblCalculatedForFunds.Text <- "Marktwaarde, peildatum, aantal stukken en koers voor fonds " + selectedFund.Name
+                                        txtCalculatedForFunds.Text <- calculatedValue.ToString(".0000")
+                                        txtNPositions.Text <- nPositions.ToString(".0000")
+                                        txtPriceForFund.Text <- price.ToString(".0000")
                                         txtPeildatumForFund.Text <- latestDate.ToString("dd-MMM-yyyy", System.Globalization.CultureInfo.InvariantCulture)
                                        )
 
@@ -78,10 +82,12 @@ let maakEffectenPortefeuilleFormulier () =
 
         let funds = repo.Funds
         let mutable totalValue = 0.0
+        txtPriceForFund.Visible <- false
+        txtNPositions.Visible <- false
         lblCalculatedForFunds.Text <- "Marktwaarde voor alle fondsen in de portefeuille per peildatum"
         txtPeildatumForFund.Text <- selectedDate.ToString("dd-MMM-yyyy", System.Globalization.CultureInfo.InvariantCulture)
         for fund in funds do
-            let (_, calculatedValue, _) = XmlFundLoader.StatisticsForFundAsOfGivenDate repo fund.Name selectedDate
+            let (_, calculatedValue, _, _) = XmlFundLoader.StatisticsForFundAsOfGivenDate repo fund.Name selectedDate
             totalValue <- totalValue + float calculatedValue
         txtCalculatedForFunds.Text <- totalValue.ToString(".00")
      
@@ -100,5 +106,7 @@ let maakEffectenPortefeuilleFormulier () =
     frmEffectenportefeuille.Controls.Add lblCalculatedForFunds
     frmEffectenportefeuille.Controls.Add txtCalculatedForFunds
     frmEffectenportefeuille.Controls.Add txtPeildatumForFund
+    frmEffectenportefeuille.Controls.Add txtNPositions
+    frmEffectenportefeuille.Controls.Add txtPriceForFund
     frmEffectenportefeuille.Controls.Add(btnTerug)
     frmEffectenportefeuille

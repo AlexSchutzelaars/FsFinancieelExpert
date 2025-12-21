@@ -11,9 +11,9 @@ module XmlFundLoader =
         member _.Date = date
         member _.HowMany = howMany
         member _.Price = price
-        member _.Value = howMany * price
+        member _.CalculatedValue = howMany * price
         override this.ToString() =
-            sprintf "Date=%O; HowMany=%M; Price=%M; Value=%M" this.Date this.HowMany this.Price this.Value
+            sprintf "Date=%O; HowMany=%M; Price=%M; Value=%M" this.Date this.HowMany this.Price this.CalculatedValue
 
     type Fund(provider: string, name: string, description: string, timeSlices: TimeSlice list) =
         member _.Provider = provider
@@ -35,7 +35,7 @@ module XmlFundLoader =
                     | _ -> filtered |> List.maxBy (fun ts -> ts.Date)
 
         /// Som van alle values (useful als meerdere posities)
-        member _.TotalValue = timeSlices |> List.sumBy (fun ts -> ts.Value)
+        member _.TotalValue = timeSlices |> List.sumBy (fun ts -> ts.CalculatedValue)
         override this.ToString() =
             sprintf "%s | %s | %s | slices=%d | total=%M" provider name description (List.length timeSlices) (this.TotalValue)
 
@@ -123,7 +123,7 @@ module XmlFundLoader =
     /// Voorbeeld:
     ///   let peildatum = DateTime(2025, 8, 1)
     ///   let (peildatum, waarde, stukken) = StatisticsForFundAsOfGivenDate repo "ASN AandelenFonds" peildatum
-    let StatisticsForFundAsOfGivenDate (repo: FundRepository) (fundName: string) (asOfDate: DateTime) : DateTime*decimal * decimal =
+    let StatisticsForFundAsOfGivenDate (repo: FundRepository) (fundName: string) (asOfDate: DateTime) : DateTime*decimal * decimal * decimal =
     // verzamel alle TimeSlices voor het fonds (case-insensitive naam) met Date <= asOfDate
         let relevantSlices =
             repo.Funds
@@ -132,15 +132,18 @@ module XmlFundLoader =
             |> List.filter (fun ts -> ts.Date <= asOfDate)
 
         match relevantSlices with
-            | [] -> (DateTime.MinValue, 0M, 0M)
+            | [] -> (DateTime.MinValue, 0M, 0M, 0M)
              | _ ->
                 let latestDate = relevantSlices |> List.maxBy (fun ts -> ts.Date) |> fun ts -> ts.Date
                 let slicesOnLatest =
                     relevantSlices
                         |> List.filter (fun ts -> ts.Date = latestDate)
-                let totalValue = slicesOnLatest |> List.sumBy (fun ts -> ts.Value)
+                let totalValue = slicesOnLatest |> List.sumBy (fun ts -> ts.CalculatedValue)
                 let totalUnits = slicesOnLatest |> List.sumBy (fun ts -> ts.HowMany)
-                (latestDate, totalValue, totalUnits)
+                let price = slicesOnLatest |> List.tryHead |> function
+                                | Some ts -> ts.Price
+                                | None -> 0M
+                (latestDate, totalValue, totalUnits, price)
 
 
 
