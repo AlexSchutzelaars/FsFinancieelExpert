@@ -42,5 +42,9 @@
     <ProjectReference Include="FsFinancieelRekenen\FsFinancieelRekenen.fsproj" />
     <ProjectReference Include="FundInfoXml\XmlFundLoader.fsproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Prolog\lpa_bereken_toekomst_waarde\" />
+  </ItemGroup>
 </Project>
 
